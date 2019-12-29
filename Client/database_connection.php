@@ -8,13 +8,18 @@ if( !isset($aResult['error']) ) {
         case 'getData':
             $aResult['result']['sensor_location'] = get_sensor_locations();
             $aResult['result']['cluster_location'] = get_cluster_locations();
+            if(empty($aResult['result']['sensor_location']) || empty($aResult['result']['cluster_location'])){
+                $aResult['error'] = 'No data found!';
+            }
             break;
         case 'getClusters':
-            if(!isset($_GET['weeknumber']) ) {
+            if(!isset($_GET['weeknumber']) || !isset($_GET['sensorID'])) {
                 $aResult['error'] = 'No function arguments!';
             } else {
-               // insert_data($_GET['arguments'],2.2,2.3, "banan", 2.4,2.5);
                 $aResult['result'] = get_cluster_pm($_GET['sensorID'], $_GET['weeknumber']);
+                if(empty($aResult['result'])){
+                    $aResult['error'] = 'Sensor ID or week number not right!';
+                }
             }
             break;
         default:

@@ -56,8 +56,8 @@ function makePoly(map, latList, longList) {
 function makeClusterCircles(map, latList, longList, radius){
     for(let i = 0; i < latList.length; i++) {
         let circle = L.circle([latList[i], longList[i]], {
-            color: 'red',
-            fillColor: '#f03',
+            color: 'blue',
+            fillColor: '#0000ff',
             fillOpacity: 0.1,
             radius: radius[i]
         }).addTo(map);
