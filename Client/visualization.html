@@ -19,40 +19,40 @@
 </head>
 <body>
 <div id = buttons>
-    Pick a week: <label for="week"></label><input type="number" id="week">
+    Pick a sensor: <label for="sensorID"></label><input type="number" id="sensorID"> <br>
+    Pick a week: <label for="week"></label><input type="number" id="week"> <br>
     <button id="b1">Show Sensor Locations!</button>
     <button id="b2">Temp Name!</button>
 </div>
 Locations:
-<div id="map"></div>
+<div id="locationmap" class="map"></div>
+<div id="clustermap" class="map"></div>
 <div id="vis"></div>
 
 <script>
     $(document).ready(function(){
-        $("#b1").click(function(){
-            $.ajax({
-                type: "GET",
-                url: 'database_connection.php',
-                dataType: 'json',
-                data: {functionname: 'getData'},
+        $.ajax({
+            type: "GET",
+            url: 'database_connection.php',
+            dataType: 'json',
+            data: {functionname: 'getData'},
 
-                success: function (obj) {
-                    if( !('error' in obj) ) {
-                        if(!obj.result.length) {
-                            console.log("empty boi");
-                        } else {
-                            visualize_locations(JSON.parse(obj.result));
-                            visualize_locations2(obj.result);
-                        }
-                    }
-                    else {
-                        console.log(obj.error);
-                    }
-                },
-                error: function (xhr, textStatus, errorThrown){
-                    console.log('STATUS: '+textStatus+'\nERROR THROWN: '+errorThrown);
+            success: function (obj) {
+                if( !('error' in obj) ) {
+                    visualize_location_of_sensors_and_clusters(obj.result);
                 }
-            });
+                else {
+                    console.log(obj.error);
+                }
+            },
+            error: function (xhr, textStatus, errorThrown){
+                console.log('STATUS: '+textStatus+'\nERROR THROWN: '+errorThrown);
+            }
+        });
+
+
+        $("#b1").click(function(){
+
         });
         $("#b2").click(function(){
             $.ajax({
@@ -61,16 +61,17 @@ Locations:
                 dataType: 'json',
                 data: {
                     functionname: 'getClusters',
-                    weeknumber: document.getElementById("week").value},
+                    weeknumber: document.getElementById("week").value,
+                    sensorID: document.getElementById("sensorID").value
+                },
 
                 success: function (obj) {
                     if( !('error' in obj) ) {
-                        if(!obj.result.length) {
-                            console.log("empty boi");
-                        } else {
-                            // put visualization
-                            console.log(obj.result);
-                        }
+
+                        // put visualization
+                        //visualize_clusters(obj.result);
+                        console.log(obj.result);
+
                     }
                     else {
                         console.log(obj.error);
