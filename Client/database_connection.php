@@ -5,7 +5,7 @@ $aResult = array();
 if( !isset($_GET['functionname']) ) { $aResult['error'] = 'No function name!'; }
 if( !isset($aResult['error']) ) {
     switch($_GET['functionname']) {
-        case 'getData':
+        case 'getLocationData':
             $aResult['result']['sensor_location'] = get_sensor_locations();
             $aResult['result']['cluster_location'] = get_cluster_locations();
             if(empty($aResult['result']['sensor_location']) || empty($aResult['result']['cluster_location'])){
@@ -13,10 +13,10 @@ if( !isset($aResult['error']) ) {
             }
             break;
         case 'getClusters':
-            if(!isset($_GET['weeknumber']) || !isset($_GET['sensorID'])) {
+            if(!isset($_GET['weeknumber']) || !isset($_GET['clusterID'])) {
                 $aResult['error'] = 'No function arguments!';
             } else {
-                $aResult['result'] = get_cluster_pm($_GET['sensorID'], $_GET['weeknumber']);
+                $aResult['result'] = get_cluster_pm($_GET['clusterID'], $_GET['weeknumber']);
                 if(empty($aResult['result'])){
                     $aResult['error'] = 'Sensor ID or week number not right!';
                 }
