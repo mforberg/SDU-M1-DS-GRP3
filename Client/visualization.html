@@ -52,7 +52,32 @@ Locations:
 
 
         $("#b1").click(function(){
+            $.ajax({
+                type: "GET",
+                url: 'database_connection.php',
+                dataType: 'json',
+                data: {
+                    functionname: 'getClusters',
+                    weeknumber: document.getElementById("week").value
+                },
 
+                success: function (obj) {
+                    if( !('error' in obj) ) {
+
+                        // put visualization
+                        //visualize_clusters(obj.result);
+                        console.log(obj.result);
+
+                    }
+                    else {
+                        console.log(obj.error);
+                    }
+                },
+
+                error: function (xhr, textStatus, errorThrown){
+                    console.log('STATUS: '+textStatus+'\nERROR THROWN: '+errorThrown);
+                }
+            });
         });
         $("#b2").click(function(){
             $.ajax({
@@ -60,9 +85,9 @@ Locations:
                 url: 'database_connection.php',
                 dataType: 'json',
                 data: {
-                    functionname: 'getClusters',
+                    functionname: 'getSpecificCluster',
                     weeknumber: document.getElementById("week").value,
-                    sensorID: document.getElementById("sensorID").value
+                    sensorID: document.getElementById("clusterID").value
                 },
 
                 success: function (obj) {
