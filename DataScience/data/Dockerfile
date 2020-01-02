@@ -25,9 +25,8 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8  
 
 # adding files to the container
-# remove 2 when know what it does
-WORKDIR /app2
-ADD . /app2
+WORKDIR /app
+ADD . /app
 
 # running the python file at container startup
 CMD ["python3 app.py"]
