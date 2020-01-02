@@ -25,7 +25,7 @@ services:
     ports:
       - 9864:9864
     volumes:
-      - hadoop_datanode1:/hadoop/app/files
+      - hadoop_datanode1:/hadoop/dfs/data
     environment:
       SERVICE_PRECONDITION: "namenode:9870"
     env_file:
@@ -41,7 +41,7 @@ services:
     ports:
       - 9865:9864
     volumes:
-      - hadoop_datanode2:/user/root/app
+      - hadoop_datanode1:/hadoop/dfs/data
     environment:
       SERVICE_PRECONDITION: "namenode:9870"
     env_file:
@@ -57,7 +57,7 @@ services:
     ports:
       - 9866:9864
     volumes:
-      - ./files:/app/files
+      - hadoop_datanode1:/hadoop/dfs/data
     environment:
       SERVICE_PRECONDITION: "namenode:9870"
     env_file:
