@@ -5,18 +5,33 @@ $aResult = array();
 if( !isset($_GET['functionname']) ) { $aResult['error'] = 'No function name!'; }
 if( !isset($aResult['error']) ) {
     switch($_GET['functionname']) {
-        case 'getData':
+        case 'getLocationData':
             $aResult['result']['sensor_location'] = get_sensor_locations();
             $aResult['result']['cluster_location'] = get_cluster_locations();
-            break;
-        case 'getClusters':
-            if(!isset($_GET['weeknumber']) ) {
-                $aResult['error'] = 'No function arguments!';
-            } else {
-               // insert_data($_GET['arguments'],2.2,2.3, "banan", 2.4,2.5);
-                $aResult['result'] = get_cluster_pm($_GET['sensorID'], $_GET['weeknumber']);
+            if(empty($aResult['result']['sensor_location']) || empty($aResult['result']['cluster_location'])){
+                $aResult['error'] = 'No data found!';
             }
             break;
+        case 'getClusters':
+            if(!isset($_GET['weeknumber'])) {
+                $aResult['error'] = 'No function arguments!';
+            } else {
+                $aResult['result'] = get_clusters_pm($_GET['weeknumber']);
+                if(empty($aResult['result'])){
+                    $aResult['error'] = 'Sensor ID or week number not right!';
+                }
+            }
+            break;
+        case 'getSpecificCluster':
+        if(!isset($_GET['weeknumber']) || !isset($_GET['clusterID'])) {
+            $aResult['error'] = 'No function arguments!';
+        } else {
+            $aResult['result'] = get_specific_cluster_pm($_GET['clusterID'], $_GET['weeknumber']);
+            if(empty($aResult['result'])){
+                $aResult['error'] = 'Sensor ID or week number not right!';
+            }
+        }
+        break;
         default:
             $aResult['error'] = 'Not found function '.$_GET['functionname'].'!';
             break;
@@ -77,7 +92,23 @@ function get_sensor_pm($sensorID, $timestamp){
     return $result;
 }
 
-function get_cluster_pm($clusterID, $week){
+function get_clusters_pm($week){
+    $conn = getConnection();
+    $statement = $conn->prepare('SELECT clusters.clusterID, clusters.lat, clusters.lon, clusters.`range`, x.P1, x.P2 
+                                            FROM clusters INNER JOIN(
+                                                SELECT clusterID, P1, P2 
+                                                FROM pmvalues_clusters 
+                                                where pmvalues_clusters.week = :week) x 
+                                            WHERE clusters.clusterID = x.clusterID');
+    $statement->setFetchMode(PDO::FETCH_ASSOC);
+    $statement->bindParam(':week', $week);
+    $statement->execute();
+    $result = $statement->fetchAll();
+    $conn = null;
+    return $result;
+}
+
+function get_specific_cluster_pm($clusterID, $week){
     $conn = getConnection();
     $statement = $conn->prepare('SELECT * FROM pmvalues_clusters WHERE clusterID =:clusterID AND week =:week');
     $statement->setFetchMode(PDO::FETCH_ASSOC);

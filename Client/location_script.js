@@ -1,3 +1,4 @@
+
 function visualize_location_of_sensors_and_clusters(result){
     let sensors = result['sensor_location'];
     let clusters = result['cluster_location'];
@@ -56,9 +57,9 @@ function makePoly(map, latList, longList) {
 function makeClusterCircles(map, latList, longList, radius){
     for(let i = 0; i < latList.length; i++) {
         let circle = L.circle([latList[i], longList[i]], {
-            color: 'red',
-            fillColor: '#f03',
-            fillOpacity: 0.1,
+            color: 'blue',
+            fillColor: '#0000ff',
+            fillOpacity: 0,
             radius: radius[i]
         }).addTo(map);
     }
