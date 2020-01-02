@@ -1,4 +1,4 @@
 Client/.idea/*
 DataScience/.idea/*
 DataScience/.vscode/*
-DataScience/push_csv/app/*.csv
+DataScience/data/csv/*
