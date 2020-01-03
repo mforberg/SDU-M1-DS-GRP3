@@ -14,10 +14,9 @@ spark = SparkSession(sc)
 
 df = spark.read.option("header", "true").csv("/user/root/data/sofia.csv")
 df.printSchema()
-print("Observations in input data: " + str(df.count()))
 
-test = df.select('lat', 'lon').distinct().show(100)
-
+df.groupBy('sensor_id').agg({'P1' : 'mean'}).orderBy('sensor_id').show(100)
+test = df.select('lat', 'lon', 'P1').groupBy('lat', 'lon').show(100)
 #assembler = VectorAssembler(inputCols=[2, 3], outputCol="Coordinate")
 
 #output = assembler.transform(df)
