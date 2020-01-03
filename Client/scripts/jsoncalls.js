@@ -92,4 +92,26 @@ $(document).ready(function(){
             }
         });
     });
+    $("#b5").click(function(){
+        $.ajax({
+            type: "GET",
+            url: 'database_connection.php',
+            dataType: 'json',
+            data: {
+                functionname: 'getClusters',
+                weeknumber: document.getElementById("week").value
+            },
+            success: function (obj) {
+                if( !('error' in obj) ) {
+                    visualize3DGraph(obj.result);
+                }
+                else {
+                    console.log(obj.error);
+                }
+            },
+            error: function (xhr, textStatus, errorThrown){
+                console.log('STATUS: '+textStatus+'\nERROR THROWN: '+errorThrown);
+            }
+        });
+    });
 });
