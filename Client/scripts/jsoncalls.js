@@ -103,7 +103,7 @@ $(document).ready(function(){
             success: function (obj) {
                 if( !('error' in obj) ) {
                     // put visualization
-                    visualize_heatmap(obj.result);
+                    visualize_clusters_average(obj.result);
                 }
                 else {
                     console.log(obj.error);
