@@ -142,5 +142,4 @@ function visualize3DGraph(result) {
 
     Plotly.newPlot('3DClustering', data1, layout);
 
-});
 };
