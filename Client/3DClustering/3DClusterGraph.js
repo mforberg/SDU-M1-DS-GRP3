@@ -67,7 +67,7 @@ function visualize3DGraph(result) {
             width: 477
     };
 
-    Plotly.newPlot('myDiv', data, layout);
+    Plotly.newPlot('3DClustering', data, layout);
 
 });
 };
