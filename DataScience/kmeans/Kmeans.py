@@ -4,11 +4,25 @@ from pyspark.ml.evaluation import ClusteringEvaluator
 from pyspark.context import SparkContext
 from pyspark.sql.session import SparkSession
 
+from pyspark.ml.feature import VectorAssembler
+
+
+
 sc = SparkContext(appName='Clustering').getOrCreate()
 spark = SparkSession(sc)
 
-df = spark.read.option("header", "true").csv("Documents/GitHub/SDU-M1-DS-GRP3/DataScience/cluster/data/2019-06_sds011sof.csv")
+
+df = spark.read.option("header", "true").csv("/user/root/data/sofia.csv")
+df.printSchema()
 print("Observations in input data: " + str(df.count()))
+
+test = df.select('lat', 'lon').distinct().show(100)
+
+#assembler = VectorAssembler(inputCols=[2, 3], outputCol="Coordinate")
+
+#output = assembler.transform(df)
+
+#output.select("Coordinate", )
 
 # # Loads data.
 # dataset = spark.read.format("libsvm").load("data/mllib/sample_kmeans_data.txt")
