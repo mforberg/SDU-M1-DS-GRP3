@@ -142,13 +142,11 @@ function get_specific_cluster_pm($clusterID, $week){
 
 function get_average_cluster_pm(){
     $conn = getConnection();
-    $statement = $conn->prepare('SELECT pmvalues_total_clusters.clusterID, x.lat, x.lon, x.`range`, 
-                                            pmvalues_total_clusters.P1, pmvalues_total_clusters.P2 
-                                            FROM pmvalues_total_clusters INNER JOIN(
-                                                SELECT lat, lon, `range` 
-                                                FROM clusters
-                                                ) x 
-                                            WHERE pmvalues_total_clusters.clusterID = x.clusterID');
+    $statement = $conn->prepare('SELECT clusters.clusterID, clusters.lat, clusters.lon, clusters.`range`, x.P1, x.P2 
+                                            FROM clusters INNER JOIN(
+                                                SELECT clusterID, P1, P2 
+                                                FROM pmvalues_total_clusters) x 
+                                             WHERE clusters.clusterID = x.clusterID');
     $statement->setFetchMode(PDO::FETCH_ASSOC);
     $statement->execute();
     $result = $statement->fetchAll();

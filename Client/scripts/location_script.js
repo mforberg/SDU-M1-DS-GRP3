@@ -11,16 +11,19 @@ function visualize_location_of_sensors_and_clusters(result){
     let latMid = getMedianFromList(latList, 0, latList.length);
     let longMid = getMedianFromList(longList, 0, longList.length);
     let map = L.map('locationmap').setView([latMid, longMid], 11);
-    makePoly(sensors, map);
+    makeSensorDots(sensors, map);
     makeClusterCircles(clusters, map);
     addMap(map);
 }
 
 function visualize_heatmap(result){
+    console.log(result);
     let heatList = [];
     let latList = [];
     let longList = [];
     result.forEach(element => {
+        console.log(element);
+        console.log(element['lat']);
         let temp = [];
         latList.push(element['lat']);
         longList.push(element['lon']);
@@ -31,7 +34,9 @@ function visualize_heatmap(result){
         heatList.push(temp);
     });
     let latMid = getMedianFromList(latList, 0, latList.length);
+    console.log(latMid);
     let longMid = getMedianFromList(longList, 0, longList.length);
+    console.log(longMid);
     let map = L.map('sensorheat').setView([latMid, longMid], 11);
     let heat = L.heatLayer(
         heatList // lat, lng, intensity
@@ -76,7 +81,7 @@ function getMedianFromList(pointList, startInt, amount){
     return sortedList[Math.ceil(sortedList.length / 2)];
 }
 
-function makePoly(result, map) {
+function makeSensorDots(result, map) {
     for(let i = 0; i < result.length; i++){
         let circle = L.circle([result[i]['lat'], result[i]['lon']], {
             color: 'red',
