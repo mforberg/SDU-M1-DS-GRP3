@@ -15,6 +15,7 @@ function visualize_locations2(result){
 }
 
 function visualize_stacked_bar_chart(result){
+    // convert to the format of the example
     let allpp = [];
     result.forEach(element => {
         let pp = {};
@@ -25,6 +26,7 @@ function visualize_stacked_bar_chart(result){
         pp2['x'] = element['clusterID'];
         pp2['y'] = element['P2'];
         pp2['c'] = 1;
+        // order matters
         allpp.push(pp2);
         allpp.push(pp);
     });

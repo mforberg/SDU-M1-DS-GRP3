@@ -23,15 +23,25 @@ if( !isset($aResult['error']) ) {
             }
             break;
         case 'getSpecificCluster':
-        if(!isset($_GET['weeknumber']) || !isset($_GET['clusterID'])) {
-            $aResult['error'] = 'No function arguments!';
-        } else {
-            $aResult['result'] = get_specific_cluster_pm($_GET['clusterID'], $_GET['weeknumber']);
-            if(empty($aResult['result'])){
-                $aResult['error'] = 'Sensor ID or week number not right!';
+            if(!isset($_GET['weeknumber']) || !isset($_GET['clusterID'])) {
+                $aResult['error'] = 'No function arguments!';
+            } else {
+                $aResult['result'] = get_specific_cluster_pm($_GET['clusterID'], $_GET['weeknumber']);
+                if(empty($aResult['result'])){
+                    $aResult['error'] = 'Sensor ID or week number not right!';
+                }
             }
-        }
-        break;
+            break;
+        case 'getSensors':
+            if(!isset($_GET['weeknumber'])) {
+                $aResult['error'] = 'No function arguments!';
+            } else {
+                $aResult['result'] = get_sensors_pm($_GET['weeknumber']);
+                if(empty($aResult['result'])){
+                    $aResult['error'] = 'No data found!';
+                }
+            }
+            break;
         default:
             $aResult['error'] = 'Not found function '.$_GET['functionname'].'!';
             break;
@@ -80,12 +90,16 @@ function get_cluster_locations(){
     return $result;
 }
 
-function get_sensor_pm($sensorID, $timestamp){
+function get_sensors_pm($week){
     $conn = getConnection();
-    $statement = $conn->prepare('SELECT * FROM pmvalues_sensors WHERE sensorID =:sensorID AND ts =:ts');
+    $statement = $conn->prepare('SELECT sensors.sensorID, sensors.lat, sensors.lon, x.P1, x.P2 
+                                            FROM sensors INNER JOIN(
+                                                SELECT sensorID, P1, P2 
+                                                FROM pmvalues_sensors 
+                                                where pmvalues_sensors.week = :week) x 
+                                            WHERE sensors.sensorID = x.sensorID');
     $statement->setFetchMode(PDO::FETCH_ASSOC);
-    $statement->bindParam(':sensorID', $sensorID);
-    $statement->bindParam(':ts', $timestamp);
+    $statement->bindParam(':week', $week);
     $statement->execute();
     $result = $statement->fetchAll();
     $conn = null;
