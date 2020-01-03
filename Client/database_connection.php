@@ -42,6 +42,12 @@ if( !isset($aResult['error']) ) {
                 }
             }
             break;
+        case 'getTotalSensors':
+            $aResult['result'] = get_average_cluster_pm();
+            if(empty($aResult['result'])){
+                $aResult['error'] = 'No data found!';
+            }
+            break;
         default:
             $aResult['error'] = 'Not found function '.$_GET['functionname'].'!';
             break;
@@ -128,6 +134,22 @@ function get_specific_cluster_pm($clusterID, $week){
     $statement->setFetchMode(PDO::FETCH_ASSOC);
     $statement->bindParam(':clusterID', $clusterID);
     $statement->bindParam(':week', $week);
+    $statement->execute();
+    $result = $statement->fetchAll();
+    $conn = null;
+    return $result;
+}
+
+function get_average_cluster_pm(){
+    $conn = getConnection();
+    $statement = $conn->prepare('SELECT pmvalues_total_clusters.clusterID, x.lat, x.lon, x.`range`, 
+                                            pmvalues_total_clusters.P1, pmvalues_total_clusters.P2 
+                                            FROM pmvalues_total_clusters INNER JOIN(
+                                                SELECT lat, lon, `range` 
+                                                FROM clusters
+                                                ) x 
+                                            WHERE pmvalues_total_clusters.clusterID = x.clusterID');
+    $statement->setFetchMode(PDO::FETCH_ASSOC);
     $statement->execute();
     $result = $statement->fetchAll();
     $conn = null;
