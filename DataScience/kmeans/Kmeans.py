@@ -4,30 +4,20 @@ from pyspark.ml.evaluation import ClusteringEvaluator
 from pyspark.context import SparkContext
 from pyspark.sql.session import SparkSession
 
+from pyspark.ml.feature import VectorAssembler
+from pyspark.sql import functions as F
+
+
+
 sc = SparkContext(appName='Clustering').getOrCreate()
 spark = SparkSession(sc)
 
-df = spark.read.option("header", "true").csv("Documents/GitHub/SDU-M1-DS-GRP3/DataScience/cluster/data/2019-06_sds011sof.csv")
-print("Observations in input data: " + str(df.count()))
 
-# # Loads data.
-# dataset = spark.read.format("libsvm").load("data/mllib/sample_kmeans_data.txt")
+df = spark.read.option("header", "true").csv("/user/root/data/sofia.csv")
+df.printSchema()
 
-# # Trains a k-means model.
-# kmeans = KMeans().setK(2).setSeed(1)
-# model = kmeans.fit(dataset)
+df.select('P2').orderBy('P2', ascending=False).show(100)
+#test = df.groupBy('sensor_id').agg({'P1' : 'min'}).orderBy('sensor_id')
+min_max_avg_df = df.groupBy('sensor_id').agg(F.min(df.P1),F.max(df.P1),F.avg(df.P1)).orderBy('sensor_id')
 
-# # Make predictions
-# predictions = model.transform(dataset)
-
-# # Evaluate clustering by computing Silhouette score
-# evaluator = ClusteringEvaluator()
-
-# silhouette = evaluator.evaluate(predictions)
-# print("Silhouette with squared euclidean distance = " + str(silhouette))
-
-# # Shows the result.
-# centers = model.clusterCenters()
-# print("Cluster Centers: ")
-# for center in centers:
-#     print(center)
+#print(test.show(100))

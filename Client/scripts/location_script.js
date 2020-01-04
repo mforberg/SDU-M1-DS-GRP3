@@ -1,3 +1,11 @@
+let location_map;
+let heat_map;
+document.addEventListener("DOMContentLoaded", function(event ){
+    location_map = L.map('locationmap');
+    heat_map = L.map('sensorheat');
+});
+
+
 function visualize_location_of_sensors_and_clusters(result){
     // Retrieve sensors and clusters from result.
     let sensors = result['sensor_location'];
@@ -10,9 +18,11 @@ function visualize_location_of_sensors_and_clusters(result){
     });
     let latMid = getMedianFromList(latList, 0, latList.length);
     let longMid = getMedianFromList(longList, 0, longList.length);
-    let map = L.map('locationmap').setView([latMid, longMid], 11);
-    makePoly(map, latList, longList);
-    visualize_clusters(clusters, map)
+    //let map = L.map('locationmap').setView([latMid, longMid], 11);
+    location_map.setView([latMid, longMid], 11);
+    makeSensorDots(sensors, location_map);
+    makeClusterCircles(clusters, location_map);
+    addMap(location_map);
 }
 
 function visualize_heatmap(result){
@@ -31,31 +41,45 @@ function visualize_heatmap(result){
     });
     let latMid = getMedianFromList(latList, 0, latList.length);
     let longMid = getMedianFromList(longList, 0, longList.length);
-    let map = L.map('sensorheat').setView([latMid, longMid], 11);
+    heat_map.setView([latMid, longMid], 11);
     let heat = L.heatLayer(
         heatList // lat, lng, intensity
-    , {radius: 15}).addTo(map);
-    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-        maxZoom: 18,
-        id: 'mapbox.streets',
-        accessToken: 'pk.eyJ1IjoiZ3J1cHBlOSIsImEiOiJjazFraDBuMHkwYjF2M2RwZTMwcG8xN3A2In0.HEkSoG1OZLOExq_3KNiZVA'
-    }).addTo(map);
+    , {radius: 15}).addTo(heat_map);
+    addMap(heat_map);
 }
 
-function visualize_clusters(result, map){
+function visualize_clusters_average(result){
     let latList = [];
     let longList = [];
-    let radiusList = [];
+    let colorList = [];
     result.forEach(element => {
         latList.push(element['lat']);
         longList.push(element['lon']);
-        radiusList.push(element['range']);
+        // TODO: change color depending on P1
+        colorList.push('red');
     });
-    makeClusterCircles(map, latList, longList, radiusList)
+    let latMid = getMedianFromList(latList, 0, latList.length);
+    let longMid = getMedianFromList(longList, 0, longList.length);
+    heat_map.setView([latMid, longMid], 11);
+    visualize_clusters_with_color(result, heat_map, colorList);
+    addMap(heat_map);
+}
+
+function visualize_clusters_with_color(result, map, colorList){
+    for(let i = 0; i < result.length; i++) {
+        let circle = L.circle([result[i]['lat'], result[i]['lon']], {
+            color: colorList[i],
+            fillColor: '#0000ff',
+            fillOpacity: 0,
+            radius: result[i]['range']
+        }).addTo(map);
+    }
 }
 
 function getMedianFromList(pointList, startInt, amount){
+    if (pointList.length === 1){
+        return pointList[0];
+    }
     let tempList = [];
     for(let i = startInt; i < startInt + amount; i++){
         tempList.push(parseFloat(pointList[i]));
@@ -64,31 +88,24 @@ function getMedianFromList(pointList, startInt, amount){
     return sortedList[Math.ceil(sortedList.length / 2)];
 }
 
-function makePoly(map, latList, longList) {
-    for(let i = 0; i < latList.length; i++){
-        let circle = L.circle([latList[i], longList[i]], {
+function makeSensorDots(result, map) {
+    for(let i = 0; i < result.length; i++){
+        let circle = L.circle([result[i]['lat'], result[i]['lon']], {
             color: 'red',
             fillColor: '#f03',
             fillOpacity: 0.5,
             radius: 0.3
         }).addTo(map);
     }
-
-    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-        maxZoom: 18,
-        id: 'mapbox.streets',
-        accessToken: 'pk.eyJ1IjoiZ3J1cHBlOSIsImEiOiJjazFraDBuMHkwYjF2M2RwZTMwcG8xN3A2In0.HEkSoG1OZLOExq_3KNiZVA'
-    }).addTo(map);
 }
 
-function makeClusterCircles(map, latList, longList, radius){
-    for(let i = 0; i < latList.length; i++) {
-        let circle = L.circle([latList[i], longList[i]], {
+function makeClusterCircles(result, map){
+    for(let i = 0; i < result.length; i++) {
+        let circle = L.circle([result[i]['lat'], result[i]['lon']], {
             color: 'blue',
             fillColor: '#0000ff',
             fillOpacity: 0,
-            radius: radius[i]
+            radius: result[i]['range']
         }).addTo(map);
     }
 }
