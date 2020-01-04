@@ -1,6 +1,8 @@
 <html lang="Smth">
+
 <head>
     <title>DataScience</title>
+    <link rel="icon" href="/favicon-16x16.png" type="image/png">
     <script src="https://cdn.jsdelivr.net/npm/vega@5.9.0"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@4.0.2"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.2.1"></script>
@@ -8,35 +10,46 @@
     <script src="scripts/vega_script.js"></script>
     <!--    leaflet-->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
-          integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
-          crossorigin=""/>
+        integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+        crossorigin="" />
     <!-- Make sure you put this AFTER Leaflet's CSS -->
     <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
-            integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
-            crossorigin=""></script>
+        integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+        crossorigin=""></script>
     <script src="scripts/location_script.js"></script>
     <script src="Leaflet.heat-gh-pages/dist/leaflet-heat.js"></script>
     <!--Plotly-->
-    <script src="https://cdn.plot.ly/plotly-latest.min.js?_ga=2.267198476.304268313.1578049789-1993975114.1578049789&fbclid=IwAR1SMrPN2dQm8V8TUEI31t3XRk_UxRKXt0Zk5qEseBRCRdbnwr6u8J4svnw"></script>
+    <script
+        src="https://cdn.plot.ly/plotly-latest.min.js?_ga=2.267198476.304268313.1578049789-1993975114.1578049789&fbclid=IwAR1SMrPN2dQm8V8TUEI31t3XRk_UxRKXt0Zk5qEseBRCRdbnwr6u8J4svnw"></script>
     <script src="3DClustering/3DClusterGraph.js"></script>
     <link rel="stylesheet" type="text/css" href="stylesheet.css">
 </head>
+
 <body>
-<div id = buttons>
-    Pick a cluster: <label for="clusterID"></label><input type="number" id="clusterID"> <br>
-    Pick a week: <label for="week"></label><input type="number" id="week"> <br>
-    <button id="b1">Show Sensor Locations and Clusters!</button>
-    <button id="b2">Heat 'em Up!</button>
-    <button id="b3">Stacked Bar Chart</button>
-    <button id="b4">Get Average Cluster Value!</button>
-    <button id="b5">3D Cluster Graph</button>
-</div>
-Locations:
-<div id="locationmap" class="map"></div>
-<div id="sensorheat" class="map"></div>
-<div id="clusterAverage" class="map"></div>
-<div id="vis"></div>
-<div id="3DClustering"></div>
-<script src="scripts/jsoncalls.js"></script>
+    <div id="button-wrapper">
+        <div id=buttons>
+            Pick a cluster: <label for="clusterID"></label><input type="number" id="clusterID"> <br>
+            Pick a week: <label for="week"></label><input type="number" id="week"> <br>
+            <button id="b1">Show Sensor Locations and Clusters!</button>
+            <button id="b2">Heat 'em Up!</button>
+            <button id="b3">Stacked Bar Chart</button>
+            <button id="b4">Get Average Cluster Value!</button>
+            <button id="b5">3D Cluster Graph</button>
+        </div>
+    </div>
+    <div id="content-wrapper">
+        Locations:
+        <div id="content-row-one">
+            <div id="locationmap" class="map"></div>
+            <div id="sensorheat" class="map"></div>
+        </div>
+        <div id="content-row-two">
+            <div id="clusterAverage" class="map"></div>
+            <div id="vis"></div>
+        </div>
+        <div id="3DClustering"></div>
+    </div>
+    <script src="scripts/jsoncalls.js"></script>
 </body>
+
 </html>
