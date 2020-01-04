@@ -1,8 +1,10 @@
 let location_map;
 let heat_map;
+let cluster_average;
 document.addEventListener("DOMContentLoaded", function(event ){
     location_map = L.map('locationmap');
     heat_map = L.map('sensorheat');
+    cluster_average = L.map('clusterAverage');
 });
 
 
@@ -55,20 +57,23 @@ function visualize_clusters_average(result){
     result.forEach(element => {
         latList.push(element['lat']);
         longList.push(element['lon']);
-        // TODO: change color depending on P1
-        colorList.push('red');
+        // TODO: change int to be an element from result.
+        let value = (1.0 - element['P1']) * 240;
+        colorList.push("hsl(" + value + ", 100%, 50%)");
+        //colorList.push('red');
     });
     let latMid = getMedianFromList(latList, 0, latList.length);
     let longMid = getMedianFromList(longList, 0, longList.length);
-    heat_map.setView([latMid, longMid], 11);
-    visualize_clusters_with_color(result, heat_map, colorList);
-    addMap(heat_map);
+    cluster_average.setView([latMid, longMid], 11);
+    visualize_clusters_with_color(result, cluster_average, colorList);
+    addMap(cluster_average);
 }
 
 function visualize_clusters_with_color(result, map, colorList){
     for(let i = 0; i < result.length; i++) {
         let circle = L.circle([result[i]['lat'], result[i]['lon']], {
             color: colorList[i],
+            //color: "hsl(100, 100%, 50%)",
             fillColor: '#0000ff',
             fillOpacity: 0,
             radius: result[i]['range']
@@ -118,4 +123,3 @@ function addMap(map){
         accessToken: 'pk.eyJ1IjoiZ3J1cHBlOSIsImEiOiJjazFraDBuMHkwYjF2M2RwZTMwcG8xN3A2In0.HEkSoG1OZLOExq_3KNiZVA'
     }).addTo(map);
 }
-
