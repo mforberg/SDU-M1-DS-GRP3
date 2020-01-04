@@ -71,7 +71,7 @@ function visualize3DGraph(result) {
 
     });
 */
-    var data = JSON.parse(result);
+    var data = result;
 
 
     function unpack(rows, key) {
