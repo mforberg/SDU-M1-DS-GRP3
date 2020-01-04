@@ -92,4 +92,26 @@ $(document).ready(function(){
             }
         });
     });
+    $("#b4").click(function(){
+        $.ajax({
+            type: "GET",
+            url: 'database_connection.php',
+            dataType: 'json',
+            data: {
+                functionname: 'getTotalSensors'
+            },
+            success: function (obj) {
+                if( !('error' in obj) ) {
+                    // put visualization
+                    visualize_clusters_average(obj.result);
+                }
+                else {
+                    console.log(obj.error);
+                }
+            },
+            error: function (xhr, textStatus, errorThrown){
+                console.log('STATUS: '+textStatus+'\nERROR THROWN: '+errorThrown);
+            }
+        });
+    });
 });
