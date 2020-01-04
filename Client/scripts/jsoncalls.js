@@ -1,21 +1,21 @@
-$(document).ready(function(){
-    $("#b1").click(function(){
+$(document).ready(function () {
+    $("#b1").click(function () {
         $.ajax({
             type: "GET",
             url: 'database_connection.php',
             dataType: 'json',
-            data: {functionname: 'getLocationData'},
+            data: { functionname: 'getLocationData' },
 
             success: function (obj) {
-                if( !('error' in obj) ) {
+                if (!('error' in obj)) {
                     visualize_location_of_sensors_and_clusters(obj.result);
                 }
                 else {
                     console.log(obj.error);
                 }
             },
-            error: function (xhr, textStatus, errorThrown){
-                console.log('STATUS: '+textStatus+'\nERROR THROWN: '+errorThrown);
+            error: function (xhr, textStatus, errorThrown) {
+                console.log('STATUS: ' + textStatus + '\nERROR THROWN: ' + errorThrown);
             }
         });
 
@@ -46,7 +46,7 @@ $(document).ready(function(){
         //     }
         // });
     });
-    $("#b2").click(function(){
+    $("#b2").click(function () {
         $.ajax({
             type: "GET",
             url: 'database_connection.php',
@@ -56,7 +56,7 @@ $(document).ready(function(){
                 weeknumber: document.getElementById("week").value
             },
             success: function (obj) {
-                if( !('error' in obj) ) {
+                if (!('error' in obj)) {
                     // put visualization
                     visualize_heatmap(obj.result);
                 }
@@ -64,12 +64,12 @@ $(document).ready(function(){
                     console.log(obj.error);
                 }
             },
-            error: function (xhr, textStatus, errorThrown){
-                console.log('STATUS: '+textStatus+'\nERROR THROWN: '+errorThrown);
+            error: function (xhr, textStatus, errorThrown) {
+                console.log('STATUS: ' + textStatus + '\nERROR THROWN: ' + errorThrown);
             }
         });
     });
-    $("#b3").click(function(){
+    $("#b3").click(function () {
         $.ajax({
             type: "GET",
             url: 'database_connection.php',
@@ -79,7 +79,7 @@ $(document).ready(function(){
                 weeknumber: document.getElementById("week").value
             },
             success: function (obj) {
-                if( !('error' in obj) ) {
+                if (!('error' in obj)) {
                     // put visualization
                     visualize_stacked_bar_chart(obj.result);
                 }
@@ -87,12 +87,13 @@ $(document).ready(function(){
                     console.log(obj.error);
                 }
             },
-            error: function (xhr, textStatus, errorThrown){
-                console.log('STATUS: '+textStatus+'\nERROR THROWN: '+errorThrown);
+            error: function (xhr, textStatus, errorThrown) {
+                console.log('STATUS: ' + textStatus + '\nERROR THROWN: ' + errorThrown);
             }
         });
     });
-    $("#b4").click(function(){
+
+    $("#b4").click(function () {
         $.ajax({
             type: "GET",
             url: 'database_connection.php',
@@ -101,7 +102,7 @@ $(document).ready(function(){
                 functionname: 'getTotalSensors'
             },
             success: function (obj) {
-                if( !('error' in obj) ) {
+                if (!('error' in obj)) {
                     // put visualization
                     visualize_clusters_average(obj.result);
                 }
@@ -109,9 +110,35 @@ $(document).ready(function(){
                     console.log(obj.error);
                 }
             },
-            error: function (xhr, textStatus, errorThrown){
-                console.log('STATUS: '+textStatus+'\nERROR THROWN: '+errorThrown);
+            error: function (xhr, textStatus, errorThrown) {
+                console.log('STATUS: ' + textStatus + '\nERROR THROWN: ' + errorThrown);
             }
         });
     });
+
+    $("#b5").click(function () {
+        $.ajax({
+            type: "GET",
+            url: 'database_connection.php',
+            dataType: 'json',
+            data: {
+
+                functionname: 'getClusters',
+                weeknumber: document.getElementById("week").value
+            },
+            success: function (obj) {
+                if (!('error' in obj)) {
+                    visualize3DGraph(obj.result);
+                }
+                else {
+                    console.log(obj.error);
+                }
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                console.log('STATUS: ' + textStatus + '\nERROR THROWN: ' + errorThrown);
+            }
+        });
+    });
+
+
 });
