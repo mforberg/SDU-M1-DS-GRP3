@@ -4,8 +4,10 @@ from pyspark.context import SparkContext
 from pyspark.sql.session import SparkSession
 from pyspark.ml.feature import VectorAssembler
 from pyspark.sql import functions as F
-#from pyspark.sql.functions import *
+from normalize import get_min_max
+from pyspark.sql.functions import udf
 from pyspark.sql.types import DoubleType
+from pyspark.sql.functions import UserDefinedFunction
 
 
 sc = SparkContext(appName='Clustering').getOrCreate()
@@ -35,18 +37,67 @@ df = df.withColumn("id", F.monotonically_increasing_id()).drop("P1").drop("lon")
 df_joined = df.join(dataframe_t, "id", "inner").drop("id")
 df_joined.cache()
 
+
+min_max_avg_df = df_joined.groupBy('lat', 'lon' ).agg(F.avg(df_joined.P1)).withColumnRenamed('avg(P1)', 'avg').orderBy('lat')
+df_cloned = spark.createDataFrame(min_max_avg_df.rdd, min_max_avg_df.schema)
+
+# max[0] = max avg, [1] max lon, [2] max lat
+# min[0] = min avg, [1] min lon, [2] min lat
+max = df_cloned.agg(F.max(df_cloned.avg),F.max(df_cloned.lon),F.max(df_cloned.lat)).collect()[0]
+min = df_cloned.agg(F.min(df_cloned.avg),F.min(df_cloned.lon),F.min(df_cloned.lat)).collect()[0]
+
+#Find min and max from values
+print(max)
+tuple = get_min_max(min, max)
+print (tuple)
+
+df_cloned.show(100)
+
+# UDF that normalizes values
+udf = UserDefinedFunction(lambda x: (x - tuple[0]) / (tuple[1] - tuple[0]), DoubleType())
+
+# Normalize one column at a time, because python sucks...
+# Also lat, lon, and avg has to be normalized.
+df_normalize_lat = df_cloned.select(*[udf(column).alias('lat') if column == 'lat' else column for column in df_cloned.columns])
+df_normalize_lon = df_normalize_lat.select(*[udf(column).alias('lon') if column == 'lon' else column for column in df_normalize_lat.columns])
+df_normalize_p1 = df_normalize_lon.select(*[udf(column).alias('avg') if column == 'avg' else column for column in df_normalize_lat.columns])
+
+df_normalize_p1.show(5)
+
+# Better naming
+df_complete = df_normalize_p1
+
+print("SPAGHETTI")
+df_complete.printSchema()
+
+features_normalized = ['lat', 'lon', 'avg']
+vector_assembler_normalized = VectorAssembler(inputCols=features_normalized, outputCol="features")
+
+dataframe_t_normalized = vector_assembler_normalized.transform(df_complete)
+
+dataframe_t_normalized = dataframe_t_normalized.withColumn("id", F.monotonically_increasing_id())
+print("Look here nice")
+dataframe_t_normalized.printSchema()
+dataframe_t_normalized.show(5)
+print("COUNT")
+print(dataframe_t_normalized.count())
+
 # Trains a k-means model.
-kmeans = KMeans().setK(20).setSeed(123).setFeaturesCol("features")
-model = kmeans.fit(dataframe_t) # was dataset
+k_list = []
+for k in range (2, 80):
 
-# Make predictions
-predictions = model.transform(dataframe_t) # was dataset
+    kmeans = KMeans().setK(k).setSeed(123).setFeaturesCol("features")
+    model = kmeans.fit(dataframe_t_normalized) # was dataset
 
-# Evaluate clustering by computing Silhouette score
-evaluator = ClusteringEvaluator()
+    # Make predictions
+    predictions = model.transform(dataframe_t_normalized) # was dataset
 
-silhouette = evaluator.evaluate(predictions)
-print("Silhouette with squared euclidean distance = " + str(silhouette))
+    # Evaluate clustering by computing Silhouette score
+    evaluator = ClusteringEvaluator()
+
+    silhouette = evaluator.evaluate(predictions)
+    k_list.append(silhouette)
+    print("Silhouette with squared euclidean distance = " + str(silhouette))
 
 # Shows the result.
 centers = model.clusterCenters()
@@ -57,3 +108,5 @@ for center in centers:
 dataframe_t.printSchema()
 print(model.summary.clusterSizes)
 predictions.printSchema()
+
+# Super functional kmeans
