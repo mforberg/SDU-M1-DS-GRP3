@@ -34,13 +34,27 @@
                     <td>Pick a week: <label for="week"></label><input type="number" id="week"> <br></td>
                 </tr>
             </table>
-           <!-- Pick a cluster: <label for="clusterID"></label><input type="number" id="clusterID"> <br>
+            <!-- Pick a cluster: <label for="clusterID"></label><input type="number" id="clusterID"> <br>
             Pick a week: <label for="week"></label><input type="number" id="week"> <br>-->
-            <button id="b1" class="buttonFinish">Show Sensor Locations and Clusters!</button>
-            <button id="b2" class="buttonFinish">Heat 'em Up!</button>
-            <button id="b3" class="buttonFinish">Stacked Bar Chart</button>
-            <button id="b4" class="buttonFinish">Get Average Cluster Value!</button>
-            <button id="b5" class="buttonFinish">3D Cluster Graph</button>
+            <table id="buttonTable">
+                <colgroup>
+                    <col style="width: 20%" />
+                    <col style="width: 20%" />
+                    <col style="width: 20%" />
+                    <col style="width: 20%" />
+                    <col style="width: 20%" />
+                  </colgroup>
+                <tr>
+                    <td> <button id="b1" class="buttonFinish">Show Sensor Locations and Clusters!</button> </td>
+                    <td><button id="b2" class="buttonFinish">Heat 'em Up!</button></td>
+                    <td><button id="b3" class="buttonFinish">Stacked Bar Chart</button></td>
+                    <td><button id="b4" class="buttonFinish">Get Average Cluster Value!</button></td>
+                    <td><button id="b5" class="buttonFinish">3D Cluster Graph</button></td>
+                    
+                    
+                </tr>
+            </table>
+
         </div>
     </div>
     <div id="content-wrapper">
@@ -49,7 +63,7 @@
             <div id="locationmap" class="map"></div>
             <h3>Heatmap</h3>
             <div id="sensorheat" class="map"></div>
-            
+
         </div>
         <div id="content-row-two">
             <h3>Cluster average value</h3>
