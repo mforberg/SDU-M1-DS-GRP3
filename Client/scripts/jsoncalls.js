@@ -53,7 +53,8 @@ $(document).ready(function () {
             dataType: 'json',
             data: {
                 functionname: 'getSensors',
-                weeknumber: document.getElementById("week").value
+                monthnumber: document.getElementById("month").value,
+                yearnumber: document.getElementById("year").value
             },
             success: function (obj) {
                 if (!('error' in obj)) {
@@ -75,8 +76,9 @@ $(document).ready(function () {
             url: 'database_connection.php',
             dataType: 'json',
             data: {
-                functionname: 'getClusters',
-                weeknumber: document.getElementById("week").value
+                functionname: 'getSpecificCluster',
+                clusterID: document.getElementById("clusterID").value,
+                yearnumber: document.getElementById("year").value
             },
             success: function (obj) {
                 if (!('error' in obj)) {
@@ -122,9 +124,9 @@ $(document).ready(function () {
             url: 'database_connection.php',
             dataType: 'json',
             data: {
-
                 functionname: 'getClusters',
-                weeknumber: document.getElementById("week").value
+                monthnumber: document.getElementById("month").value,
+                yearnumber: document.getElementById("year").value
             },
             success: function (obj) {
                 if (!('error' in obj)) {

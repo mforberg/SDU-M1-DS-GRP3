@@ -28,26 +28,47 @@
 <body>
     <div id="button-wrapper">
         <div id=buttons>
-            Pick a cluster: <label for="clusterID"></label><input type="number" id="clusterID"> <br>
-            Pick a week: <label for="week"></label><input type="number" id="week"> <br>
-            <button id="b1">Show Sensor Locations and Clusters!</button>
-            <button id="b2">Heat 'em Up!</button>
-            <button id="b3">Stacked Bar Chart</button>
-            <button id="b4">Get Average Cluster Value!</button>
-            <button id="b5">3D Cluster Graph</button>
+            <table id="inputFields">
+                <tr>
+                    <td>Pick a Year: <label for="year"></label><input type="number" id="year"> <br></td>
+                    <td>Pick a Month: <label for="month"></label><input type="number" id="month"> <br></td>
+                    <td>Pick a Cluster: <label for="clusterID"></label><input type="number" id="clusterID"></td>
+                </tr>
+            </table>
+            <script src="siteutils.js"></script>
+            <!-- Pick a cluster: <label for="clusterID"></label><input type="number" id="clusterID"> <br>
+            Pick a week: <label for="week"></label><input type="number" id="week"> <br>-->
+            <table id="buttonTable">
+                <tr>
+                    <td><button id="b1" class="buttonFinish">Show Sensor Locations and Clusters!</button> </td>
+                    <td><button id="b2" class="buttonFinish">Heat 'em Up!</button></td>
+                    <td><button id="b3" class="buttonFinish">Stacked Bar Chart</button></td>
+                    <td><button id="b4" class="buttonFinish">Get Average Cluster Value!</button></td>
+                    <td><button id="b5" class="buttonFinish">3D Cluster Graph</button></td>
+                </tr>
+            </table>
+
         </div>
     </div>
     <div id="content-wrapper">
-        Locations:
-        <div id="content-row-one">
+        <div id="content-col-one">
+            <h3>Locations:</h3>
             <div id="locationmap" class="map"></div>
+            <h3>Heatmap</h3>
             <div id="sensorheat" class="map"></div>
+
         </div>
-        <div id="content-row-two">
+        <div id="content-col-two">
+            <h3>Cluster average value</h3>
             <div id="clusterAverage" class="map"></div>
+            <h3>3D Clustering</h3>
+            <div id="3DClustering"></div>
+        </div>
+
+        <div id="content-row-bottom">
+            <h3>Nothing, seriously nothing at all</h3>
             <div id="vis"></div>
         </div>
-        <div id="3DClustering"></div>
     </div>
     <script src="scripts/jsoncalls.js"></script>
 </body>
