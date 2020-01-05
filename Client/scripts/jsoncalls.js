@@ -76,8 +76,8 @@ $(document).ready(function () {
             url: 'database_connection.php',
             dataType: 'json',
             data: {
-                functionname: 'getClusters',
-                monthnumber: document.getElementById("month").value,
+                functionname: 'getSpecificCluster',
+                clusterID: document.getElementById("clusterID").value,
                 yearnumber: document.getElementById("year").value
             },
             success: function (obj) {

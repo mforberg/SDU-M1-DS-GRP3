@@ -3,11 +3,11 @@ function visualize_stacked_bar_chart(result){
     let combinedData = [];
     result.forEach(element => {
         let topData = {};
-        topData['x'] = element['clusterID'];
+        topData['x'] = element['_month'];
         topData['y'] = element['P1'] - element['P2'];
         topData['c'] = 0;
         let bottomData ={};
-        bottomData['x'] = element['clusterID'];
+        bottomData['x'] = element['_month'];
         bottomData['y'] = element['P2'];
         bottomData['c'] = 1;
         // order matters

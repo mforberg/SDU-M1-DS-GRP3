@@ -22,16 +22,16 @@ if( !isset($aResult['error']) ) {
                 }
             }
             break;
-//        case 'getSpecificCluster':
-//            if(!isset($_GET['weeknumber']) || !isset($_GET['clusterID'])) {
-//                $aResult['error'] = 'No function arguments!';
-//            } else {
-//                $aResult['result'] = get_specific_cluster_pm($_GET['clusterID'], $_GET['weeknumber']);
-//                if(empty($aResult['result'])){
-//                    $aResult['error'] = 'Sensor ID or week number not right!';
-//                }
-//            }
-//            break;
+        case 'getSpecificCluster':
+            if(!isset($_GET['yearnumber']) || !isset($_GET['clusterID'])) {
+                $aResult['error'] = 'No function arguments!';
+            } else {
+                $aResult['result'] = get_specific_cluster_pm($_GET['clusterID'], $_GET['yearnumber']);
+                if(empty($aResult['result'])){
+                    $aResult['error'] = 'Sensor ID or week number not right!';
+                }
+            }
+            break;
         case 'getSensors':
             if(!isset($_GET['monthnumber']) || !isset($_GET['yearnumber'])) {
                 $aResult['error'] = 'No function arguments!';
@@ -138,17 +138,17 @@ function get_clusters_pm($month, $year){
     return $result;
 }
 
-//function get_specific_cluster_pm($clusterID, $week){
-//    $conn = getConnection();
-//    $statement = $conn->prepare('SELECT * FROM pmvalues_clusters WHERE clusterID =:clusterID AND week =:week');
-//    $statement->setFetchMode(PDO::FETCH_ASSOC);
-//    $statement->bindParam(':clusterID', $clusterID);
-//    $statement->bindParam(':week', $week);
-//    $statement->execute();
-//    $result = $statement->fetchAll();
-//    $conn = null;
-//    return $result;
-//}
+function get_specific_cluster_pm($clusterID, $year){
+    $conn = getConnection();
+    $statement = $conn->prepare('SELECT clusterID, SUBSTRING(ts, 6, 2) as _month, P1, P2 FROM pmvalues_clusters WHERE clusterID = :clusterID AND SUBSTRING(ts, 1, 4) = :_year');
+    $statement->setFetchMode(PDO::FETCH_ASSOC);
+    $statement->bindParam(':clusterID', $clusterID);
+    $statement->bindParam(':_year', $year);
+    $statement->execute();
+    $result = $statement->fetchAll();
+    $conn = null;
+    return $result;
+}
 
 function get_average_cluster_pm(){
     $conn = getConnection();
