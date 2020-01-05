@@ -57,10 +57,9 @@ function visualize_clusters_average(result){
     result.forEach(element => {
         latList.push(element['lat']);
         longList.push(element['lon']);
-        // TODO: change int to be an element from result.
+        // TODO: Check when true data is received.
         let value = (1.0 - element['P1']) * 240;
         colorList.push("hsl(" + value + ", 100%, 50%)");
-        //colorList.push('red');
     });
     let latMid = getMedianFromList(latList, 0, latList.length);
     let longMid = getMedianFromList(longList, 0, longList.length);

@@ -18,7 +18,7 @@ if( !isset($aResult['error']) ) {
             } else {
                 $aResult['result'] = get_clusters_pm($_GET['monthnumber'], $_GET['yearnumber']);
                 if(empty($aResult['result'])){
-                    $aResult['error'] = 'Sensor ID or day not right!';
+                    $aResult['error'] = 'month or year not right!';
                 }
             }
             break;
@@ -28,7 +28,7 @@ if( !isset($aResult['error']) ) {
             } else {
                 $aResult['result'] = get_specific_cluster_pm($_GET['clusterID'], $_GET['yearnumber']);
                 if(empty($aResult['result'])){
-                    $aResult['error'] = 'Sensor ID or week number not right!';
+                    $aResult['error'] = 'Cluster ID or year not right!';
                 }
             }
             break;
@@ -119,7 +119,7 @@ function get_sensors_pm($month, $year){
 
 function get_clusters_pm($month, $year){
     $conn = getConnection();
-    $statement = $conn->prepare('SELECT clusters.clusterID, clusters.lat, clusters.lon, clusters.`range` x1.P1, x1.P2 
+    $statement = $conn->prepare('SELECT clusters.clusterID, clusters.lat, clusters.lon, clusters.`range`, x1.P1, x1.P2 
                                             FROM clusters
                                             INNER JOIN
                                                 (SELECT x.clusterID, x.P1, x.P2
@@ -127,7 +127,7 @@ function get_clusters_pm($month, $year){
                                                     (SELECT clusterID, SUBSTRING(ts, 1, 4) as _year, 
                                                     SUBSTRING(ts, 6, 2) as _month, 
                                                     P1, P2 FROM pmvalues_clusters) x
-                                                WHERE x._year = :year and x._month = :month) x1
+                                                WHERE x._year = :year AND x._month = :month) x1
                                             WHERE clusters.clusterID = x1.clusterID');
     $statement->setFetchMode(PDO::FETCH_ASSOC);
     $statement->bindParam(':year', $year);
