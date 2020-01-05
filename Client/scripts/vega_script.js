@@ -1,37 +1,20 @@
-function visualize_locations2(result){
-    let yourVlSpec = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-        data: {
-            values:
-                result
-        },
-        mark: 'point',
-        encoding: {
-            "x": {"field": "lon", "type": "quantitative", "scale": {"domain": [20, 25]}},
-            "y": {"field": "lat", "type": "quantitative", "scale": {"domain": [40, 45]}}
-        }
-    };
-    vegaEmbed('#vis', yourVlSpec);
-}
-
 function visualize_stacked_bar_chart(result){
     // convert to the format of the example
-    let allpp = [];
+    let combinedData = [];
     result.forEach(element => {
-        let pp = {};
-        pp['x'] = element['clusterID'];
-        pp['y'] = element['P1'] - element['P2'];
-        pp['c'] = 0;
-        let pp2 ={};
-        pp2['x'] = element['clusterID'];
-        pp2['y'] = element['P2'];
-        pp2['c'] = 1;
+        let topData = {};
+        topData['x'] = element['clusterID'];
+        topData['y'] = element['P1'] - element['P2'];
+        topData['c'] = 0;
+        let bottomData ={};
+        bottomData['x'] = element['clusterID'];
+        bottomData['y'] = element['P2'];
+        bottomData['c'] = 1;
         // order matters
-        allpp.push(pp2);
-        allpp.push(pp);
+        combinedData.push(bottomData);
+        combinedData.push(topData);
     });
-    let jsonpp = JSON.stringify(allpp);
-    console.log(jsonpp);
+    let jsonData = JSON.stringify(combinedData);
     let yourVlSpec = {
         "$schema": "https://vega.github.io/schema/vega/v5.json",
         "width": 500,
@@ -41,7 +24,7 @@ function visualize_stacked_bar_chart(result){
         "data": [
         {
             "name": "table",
-            "values": jsonpp,
+            "values": jsonData,
             // [
             //     {"x": 0, "y": 28, "c": 0}, {"x": 0, "y": 55, "c": 1},
             //     {"x": 1, "y": 43, "c": 0}, {"x": 1, "y": 91, "c": 1},
