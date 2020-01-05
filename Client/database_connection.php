@@ -140,7 +140,7 @@ function get_clusters_pm($month, $year){
 
 function get_specific_cluster_pm($clusterID, $year){
     $conn = getConnection();
-    $statement = $conn->prepare('SELECT clusterID, SUBSTRING(ts, 6, 2) as _month, P1, P2 FROM pmvalues_clusters WHERE clusterID = :clusterID AND SUBSTRING(ts, 1, 4) = :_year');
+    $statement = $conn->prepare('SELECT clusterID, SUBSTRING(ts, 6, 2) as _month, P1, P2 FROM pmvalues_clusters WHERE clusterID = :clusterID AND SUBSTRING(ts, 1, 4) = :_year ORDER BY _month ASC ');
     $statement->setFetchMode(PDO::FETCH_ASSOC);
     $statement->bindParam(':clusterID', $clusterID);
     $statement->bindParam(':_year', $year);
