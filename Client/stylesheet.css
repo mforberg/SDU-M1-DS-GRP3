@@ -11,6 +11,7 @@ h3{
     color: rgb(0, 0, 0);
 }
 
+/*Content*/
 #content-wrapper{
     background-color: rgba(168, 165, 0, 0.151);
     width: 75vw;
@@ -33,13 +34,16 @@ h3{
 
 #content-row-bottom{
     width: 100%;
+    padding: 2vh;
 }
 
+/*Button bar*/
 #button-wrapper{
     background-color: rgba(168, 165, 0, 0.151);
     width: 75vw;
     margin-bottom: 1vh;
     border-radius: 5px;
+    text-align: center;
 }
 
 input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button{
@@ -54,7 +58,6 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
     padding: 0 0 0 0;
     overflow: hidden;
     border-radius: 5px;
-
 }
 
 #buttonTable{
@@ -63,4 +66,13 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 
 #buttonTable td{
     width: 20%;
+}
+
+#inputFields{
+    display: inline-block;
+}
+
+/*BarChart*/
+#vis{
+    width: 90%;
 }
