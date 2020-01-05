@@ -15,43 +15,6 @@ function visualize_stacked_bar_chart(result){
         combinedData.push(topData);
     });
     let jsonData = JSON.stringify(combinedData);
-
-    // let yourVlSpec = {
-    //     "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    //     "data": [
-    //         {
-    //             "name": "table",
-    //             "values": jsonData
-    //         }
-    //
-    //     ],
-    //     "mark": "bar",
-    //     "encoding": {
-    //         "x": {
-    //             "timeUnit": "month",
-    //             "field": "x",
-    //             "type": "ordinal",
-    //             "axis": {"title": "Month of the year"}
-    //         },
-    //         "y": {
-    //             "aggregate": "y",
-    //             "type": "quantitative",
-    //             "axis": {"title": "poopoo"}
-    //         },
-    //         "color": {
-    //             "field": "c",
-    //             "type": "nominal",
-    //             "scale": {
-    //                 "domain": ["1", "2"],
-    //                 "range": ["#e7ba52", "#c76986"]
-    //             },
-    //             "legend": {"title": "Particulate Matter"}
-    //         }
-    //     }
-    // };
-
-
-
     let yourVlSpec = {
         "$schema": "https://vega.github.io/schema/vega/v5.json",
         "width": 300,
