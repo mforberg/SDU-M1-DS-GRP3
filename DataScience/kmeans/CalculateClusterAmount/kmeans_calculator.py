@@ -9,6 +9,7 @@ from normalize import get_min_max
 from pyspark.sql.types import DoubleType
 from pyspark.sql.functions import UserDefinedFunction
 import json
+import os
 
 
 sc = SparkContext(appName='Clustering').getOrCreate()
@@ -115,5 +116,7 @@ for center in centers:
 
 print(json.dumps(values))
 
-
+# Doesn't work, fix later.
+os.system('echo "%s" | hadoop fs -put - /user/root/json/%s.txt' %(json.dumps(values), ts))
+os.system('echo | hdfs dfs -copyToLocal -f /user/root/json/%s.txt Users/forberg/developer' %(ts))
 # Super functional kmeans
