@@ -8,6 +8,7 @@ from normalize import get_min_max
 from pyspark.sql.functions import udf
 from pyspark.sql.types import DoubleType
 from pyspark.sql.functions import UserDefinedFunction
+from operator import itemgetter
 
 
 sc = SparkContext(appName='Clustering').getOrCreate()
@@ -18,9 +19,12 @@ spark = SparkSession(sc)
 # Loads data.
 #dataset = spark.read.format("libsvm").load("data/mllib/sample_kmeans_data.txt")
 df = spark.read.option("header", "true").csv("/user/root/data/sofia.csv")
+df_rimestam = df.withColumn('timestamp', df['timestamp'].substr(1, 7))
+df_rimestam.show(5)
 df_notnull = df.filter(F.col("lon").isNotNull() & F.col("lat").isNotNull() & F.col('P1').isNotNull())
 df = df_notnull
 print("COUNT:" + str(df.count()))
+
 
 features = ['P1', 'lon', 'lat']
 vector_assembler = VectorAssembler(inputCols=features, outputCol="features")
@@ -79,12 +83,11 @@ dataframe_t_normalized = dataframe_t_normalized.withColumn("id", F.monotonically
 print("Look here nice")
 dataframe_t_normalized.printSchema()
 dataframe_t_normalized.show(5)
-print("COUNT")
-print(dataframe_t_normalized.count())
+
 
 # Trains a k-means model.
 k_list = []
-for k in range (2, 80):
+for k in range (2, 4):
 
     kmeans = KMeans().setK(k).setSeed(123).setFeaturesCol("features")
     model = kmeans.fit(dataframe_t_normalized) # was dataset
@@ -97,8 +100,15 @@ for k in range (2, 80):
 
     silhouette = evaluator.evaluate(predictions)
     k_list.append(silhouette)
-    print("Silhouette with squared euclidean distance = " + str(silhouette))
+    #print("Silhouette with squared euclidean distance = " + str(silhouette))
+    k_list.append((k, str(silhouette)))
 
+print("SPAGHET")
+dataframe_t_normalized.printSchema()
+dataframe_t_normalized.show(5)
+test = max(k_list[1])
+
+print("OPTIMAL K: " + str(test[0][0]) + " WITH A SILHOUETTE SCORE OF: " + str(test[0][1]))
 # Shows the result.
 centers = model.clusterCenters()
 print("Cluster Centers: ")
