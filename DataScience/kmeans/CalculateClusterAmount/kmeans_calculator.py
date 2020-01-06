@@ -9,6 +9,7 @@ from pyspark.sql.functions import udf
 from pyspark.sql.types import DoubleType
 from pyspark.sql.functions import UserDefinedFunction
 from operator import itemgetter
+import json
 
 
 sc = SparkContext(appName='Clustering').getOrCreate()
@@ -18,11 +19,14 @@ spark = SparkSession(sc)
 
 # Loads data.
 #dataset = spark.read.format("libsvm").load("data/mllib/sample_kmeans_data.txt")
-df = spark.read.option("header", "true").csv("/user/root/data/sofia.csv")
-df_rimestam = df.withColumn('timestamp', df['timestamp'].substr(1, 7))
-df_rimestam.show(5)
+df = spark.read.option("header", "true").csv("/user/root/data/*.csv")
+df_timestamp = df.withColumn('timestamp', df['timestamp'].substr(1, 7))
+df = df_timestamp
+timestamp = df.collect()[0][5]
 df_notnull = df.filter(F.col("lon").isNotNull() & F.col("lat").isNotNull() & F.col('P1').isNotNull())
 df = df_notnull
+df.show(5)
+df_copy = df
 print("COUNT:" + str(df.count()))
 
 
@@ -110,13 +114,32 @@ test = max(k_list[1])
 
 print("OPTIMAL K: " + str(test[0][0]) + " WITH A SILHOUETTE SCORE OF: " + str(test[0][1]))
 # Shows the result.
-centers = model.clusterCenters()
-print("Cluster Centers: ")
-for center in centers:
-    print(center)
 
 dataframe_t.printSchema()
 print(model.summary.clusterSizes)
 predictions.printSchema()
+
+
+centers = model.clusterCenters()
+min = tuple[0]
+max = tuple[1]
+ts = timestamp 
+values = list()
+values.append(min)
+values.append(max)
+values.append(ts)
+
+for center in centers:
+    temp_list = list()
+    temp_list.append(center[0])
+    temp_list.append(center[1])
+    temp_list.append(center[2])
+    values.append(temp_list)
+
+print(values)
+
+print("fk u kid")
+print(json.dumps(values))
+
 
 # Super functional kmeans
