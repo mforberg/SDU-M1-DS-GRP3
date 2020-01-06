@@ -1,10 +1,13 @@
 $(document).ready(function () {
-    $("#b1").click(function () {
+    $("#sensorsAndClustersButton").click(function () {
         $.ajax({
             type: "GET",
             url: 'database_connection.php',
             dataType: 'json',
-            data: { functionname: 'getLocationData' },
+            data: { functionname: 'getLocationData',
+                    monthnumber: document.getElementById("month").value,
+                    yearnumber: document.getElementById("year").value
+            },
 
             success: function (obj) {
                 if (!('error' in obj)) {
@@ -46,13 +49,13 @@ $(document).ready(function () {
         //     }
         // });
     });
-    $("#b2").click(function () {
+    $("#heatClustersButton").click(function () {
         $.ajax({
             type: "GET",
             url: 'database_connection.php',
             dataType: 'json',
             data: {
-                functionname: 'getSensors',
+                functionname: 'getClusters',
                 monthnumber: document.getElementById("month").value,
                 yearnumber: document.getElementById("year").value
             },
@@ -70,22 +73,21 @@ $(document).ready(function () {
             }
         });
     });
-    $("#b3").click(function () {
+    $("#barChartButton").click(function () {
         $.ajax({
             type: "GET",
             url: 'database_connection.php',
             dataType: 'json',
             data: {
-                functionname: 'getSpecificCluster',
-                clusterID: document.getElementById("clusterID").value,
+                functionname: 'getClustersAndNormalValues',
+                monthnumber: document.getElementById("month").value,
                 yearnumber: document.getElementById("year").value
             },
             success: function (obj) {
                 if (!('error' in obj)) {
                     // put visualization
-                    visualize_stacked_bar_chart(obj.result);
-                }
-                else {
+                    visualize_bar_chart(obj.result);
+                } else {
                     console.log(obj.error);
                 }
             },

@@ -7,23 +7,26 @@ document.addEventListener("DOMContentLoaded", function(event ){
     cluster_average = L.map('clusterAverage');
 });
 
-
 function visualize_location_of_sensors_and_clusters(result){
     // Retrieve sensors and clusters from result.
     let sensors = result['sensor_location'];
-    let clusters = result['cluster_location'];
+    let clusters = result['clusters'];
+    let normalize_values = result['normalize_values'];
+    let min = normalize_values[0]['low'];
+    let max = normalize_values[0]['high'];
     let latList = [];
     let longList = [];
-    sensors.forEach(element => {
+    clusters.forEach(element => {
+        // latList.push(denormalize(element['lat'], max, min));
+        // longList.push(denormalize(element['lon'], max, min));
         latList.push(element['lat']);
-        longList.push(element['lon']);
+        longList.push(element['lat']);
     });
     let latMid = getMedianFromList(latList, 0, latList.length);
     let longMid = getMedianFromList(longList, 0, longList.length);
-    //let map = L.map('locationmap').setView([latMid, longMid], 11);
     location_map.setView([latMid, longMid], 11);
     makeSensorDots(sensors, location_map);
-    makeClusterCircles(clusters, location_map);
+    makeClusterCircles(latList, longList, location_map);
     addMap(location_map);
 }
 
@@ -103,13 +106,13 @@ function makeSensorDots(result, map) {
     }
 }
 
-function makeClusterCircles(result, map){
-    for(let i = 0; i < result.length; i++) {
-        let circle = L.circle([result[i]['lat'], result[i]['lon']], {
+function makeClusterCircles(latList, longList, map){
+    for(let i = 0; i < latList.length; i++) {
+        let circle = L.circle([latList[i], longList[i]], {
             color: 'blue',
             fillColor: '#0000ff',
             fillOpacity: 0,
-            radius: result[i]['range']
+            radius: 2
         }).addTo(map);
     }
 }
@@ -121,4 +124,8 @@ function addMap(map){
         id: 'mapbox.streets',
         accessToken: 'pk.eyJ1IjoiZ3J1cHBlOSIsImEiOiJjazFraDBuMHkwYjF2M2RwZTMwcG8xN3A2In0.HEkSoG1OZLOExq_3KNiZVA'
     }).addTo(map);
+}
+
+function denormalize(normalValue, max, min) {
+    return normalValue * (max - min) + min;
 }
