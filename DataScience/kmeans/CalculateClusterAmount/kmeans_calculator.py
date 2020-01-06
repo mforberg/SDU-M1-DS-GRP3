@@ -25,9 +25,6 @@ df = df_timestamp
 timestamp = df.collect()[0][5]
 df_notnull = df.filter(F.col("lon").isNotNull() & F.col("lat").isNotNull() & F.col('P1').isNotNull())
 df = df_notnull
-df.show(5)
-df_copy = df
-print("COUNT:" + str(df.count()))
 
 
 features = ['P1', 'lon', 'lat']
@@ -54,12 +51,7 @@ df_cloned = spark.createDataFrame(min_max_avg_df.rdd, min_max_avg_df.schema)
 max = df_cloned.agg(F.max(df_cloned.avg),F.max(df_cloned.lon),F.max(df_cloned.lat)).collect()[0]
 min = df_cloned.agg(F.min(df_cloned.avg),F.min(df_cloned.lon),F.min(df_cloned.lat)).collect()[0]
 
-#Find min and max from values
-print(max)
 tuple = get_min_max(min, max)
-print (tuple)
-
-df_cloned.show(100)
 
 # UDF that normalizes values
 udf = UserDefinedFunction(lambda x: (x - tuple[0]) / (tuple[1] - tuple[0]), DoubleType())
@@ -70,13 +62,8 @@ df_normalize_lat = df_cloned.select(*[udf(column).alias('lat') if column == 'lat
 df_normalize_lon = df_normalize_lat.select(*[udf(column).alias('lon') if column == 'lon' else column for column in df_normalize_lat.columns])
 df_normalize_p1 = df_normalize_lon.select(*[udf(column).alias('avg') if column == 'avg' else column for column in df_normalize_lat.columns])
 
-df_normalize_p1.show(5)
-
 # Better naming
 df_complete = df_normalize_p1
-
-print("SPAGHETTI")
-df_complete.printSchema()
 
 features_normalized = ['lat', 'lon', 'avg']
 vector_assembler_normalized = VectorAssembler(inputCols=features_normalized, outputCol="features")
@@ -84,14 +71,13 @@ vector_assembler_normalized = VectorAssembler(inputCols=features_normalized, out
 dataframe_t_normalized = vector_assembler_normalized.transform(df_complete)
 
 dataframe_t_normalized = dataframe_t_normalized.withColumn("id", F.monotonically_increasing_id())
-print("Look here nice")
-dataframe_t_normalized.printSchema()
-dataframe_t_normalized.show(5)
 
 
 # Trains a k-means model.
 k_list = []
-for k in range (2, 4):
+min_clusters = 2
+max_clusters = 4
+for k in range (min_clusters, max_clusters):
 
     kmeans = KMeans().setK(k).setSeed(123).setFeaturesCol("features")
     model = kmeans.fit(dataframe_t_normalized) # was dataset
@@ -103,16 +89,13 @@ for k in range (2, 4):
     evaluator = ClusteringEvaluator()
 
     silhouette = evaluator.evaluate(predictions)
-    k_list.append(silhouette)
     #print("Silhouette with squared euclidean distance = " + str(silhouette))
     k_list.append((k, str(silhouette)))
 
-print("SPAGHET")
-dataframe_t_normalized.printSchema()
-dataframe_t_normalized.show(5)
-test = max(k_list[1])
 
-print("OPTIMAL K: " + str(test[0][0]) + " WITH A SILHOUETTE SCORE OF: " + str(test[0][1]))
+highest_k = max(k_list[1])
+
+print("OPTIMAL K: " + str(highest_k[0][0]) + " WITH A SILHOUETTE SCORE OF: " + str(highest_k[0][1]))
 # Shows the result.
 
 dataframe_t.printSchema()
@@ -136,9 +119,6 @@ for center in centers:
     temp_list.append(center[2])
     values.append(temp_list)
 
-print(values)
-
-print("fk u kid")
 print(json.dumps(values))
 
 
