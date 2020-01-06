@@ -5,10 +5,9 @@ from pyspark.sql.session import SparkSession
 from pyspark.ml.feature import VectorAssembler
 from pyspark.sql import functions as F
 from normalize import get_min_max
-from pyspark.sql.functions import udf
+#from pyspark.sql.functions import udf
 from pyspark.sql.types import DoubleType
 from pyspark.sql.functions import UserDefinedFunction
-from operator import itemgetter
 import json
 
 
@@ -96,11 +95,6 @@ for k in range (min_clusters, max_clusters):
 highest_k = max(k_list[1])
 
 print("OPTIMAL K: " + str(highest_k[0][0]) + " WITH A SILHOUETTE SCORE OF: " + str(highest_k[0][1]))
-# Shows the result.
-
-dataframe_t.printSchema()
-print(model.summary.clusterSizes)
-predictions.printSchema()
 
 
 centers = model.clusterCenters()
