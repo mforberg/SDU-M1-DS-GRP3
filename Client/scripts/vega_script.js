@@ -5,11 +5,11 @@ function visualize_stacked_bar_chart(result){
         let topData = {};
         topData['x'] = element['_month'];
         topData['y'] = element['P1'] - element['P2'];
-        topData['c'] = 0;
+        topData['c'] = 1;
         let bottomData ={};
         bottomData['x'] = element['_month'];
         bottomData['y'] = element['P2'];
-        bottomData['c'] = 1;
+        bottomData['c'] = 2;
         // order matters
         combinedData.push(bottomData);
         combinedData.push(topData);
@@ -17,7 +17,7 @@ function visualize_stacked_bar_chart(result){
     let jsonData = JSON.stringify(combinedData);
     let yourVlSpec = {
         "$schema": "https://vega.github.io/schema/vega/v5.json",
-        "width": 500,
+        "width": 300,
         "height": 200,
         "padding": 5,
 
@@ -25,18 +25,6 @@ function visualize_stacked_bar_chart(result){
         {
             "name": "table",
             "values": jsonData,
-            // [
-            //     {"x": 0, "y": 28, "c": 0}, {"x": 0, "y": 55, "c": 1},
-            //     {"x": 1, "y": 43, "c": 0}, {"x": 1, "y": 91, "c": 1},
-            //     {"x": 2, "y": 81, "c": 0}, {"x": 2, "y": 53, "c": 1},
-            //     {"x": 3, "y": 19, "c": 0}, {"x": 3, "y": 87, "c": 1},
-            //     {"x": 4, "y": 52, "c": 0}, {"x": 4, "y": 48, "c": 1},
-            //     {"x": 5, "y": 24, "c": 0}, {"x": 5, "y": 49, "c": 1},
-            //     {"x": 6, "y": 87, "c": 0}, {"x": 6, "y": 66, "c": 1},
-            //     {"x": 7, "y": 17, "c": 0}, {"x": 7, "y": 27, "c": 1},
-            //     {"x": 8, "y": 68, "c": 0}, {"x": 8, "y": 16, "c": 1},
-            //     {"x": 9, "y": 49, "c": 0}, {"x": 9, "y": 15, "c": 1}
-            // ],
             "transform": [
                 {
                     "type": "stack",
@@ -70,8 +58,8 @@ function visualize_stacked_bar_chart(result){
     ],
 
         "axes": [
-        {"orient": "bottom", "scale": "x", "zindex": 1},
-        {"orient": "left", "scale": "y", "zindex": 1}
+        {"orient": "bottom", "scale": "x", "zindex": 1, "title": "Month of the year"},
+        {"orient": "left", "scale": "y", "zindex": 1, "title": "Particulate Matter"}
     ],
 
         "marks": [
@@ -95,6 +83,6 @@ function visualize_stacked_bar_chart(result){
             }
         }
     ]
-    }
+    };
     vegaEmbed('#vis', yourVlSpec);
 }

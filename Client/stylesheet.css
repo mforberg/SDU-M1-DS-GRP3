@@ -1,5 +1,5 @@
 .map {
-    height: 75vh; 
+    height: 50%; 
     width: 35vw; 
 }
 body {
@@ -11,39 +11,28 @@ h3{
     color: rgb(0, 0, 0);
 }
 
-/*Content*/
 #content-wrapper{
     background-color: rgba(168, 165, 0, 0.151);
     width: 75vw;
-    height: 250vh;
-    border-radius: 5px;
+    height: 1300px;
 }
 
-#content-col-one{
+#content-row-one{
     float: left;
     width: 50%;
     padding-left: 1vw;
-    height: 170vh;
+    height: 1080px;
 }
 
-#content-col-two{
+#content-row-two{
     margin-left: 50%;
-    height: 170vh;
-    overflow: hidden;
+    height: 1080px;
 }
 
-#content-row-bottom{
-    width: 100%;
-    padding: 2vh;
-}
-
-/*Button bar*/
 #button-wrapper{
     background-color: rgba(168, 165, 0, 0.151);
     width: 75vw;
     margin-bottom: 1vh;
-    border-radius: 5px;
-    text-align: center;
 }
 
 input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button{
@@ -58,6 +47,7 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
     padding: 0 0 0 0;
     overflow: hidden;
     border-radius: 5px;
+
 }
 
 #buttonTable{
@@ -66,13 +56,4 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 
 #buttonTable td{
     width: 20%;
-}
-
-#inputFields{
-    display: inline-block;
-}
-
-/*BarChart*/
-#vis{
-    width: 90%;
 }
