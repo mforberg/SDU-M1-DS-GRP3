@@ -32,18 +32,20 @@
                 <tr>
                     <td>Pick a Year: <label for="year"></label><input type="number" id="year"> <br></td>
                     <td>Pick a Month: <label for="month"></label><input type="number" id="month"> <br></td>
-                    <td>Pick a Cluster: <label for="clusterID"></label><input type="number" id="clusterID"></td>
+<!--                    <td>Pick a Cluster: <label for="clusterID"></label><input type="number" id="clusterID"></td>-->
                 </tr>
             </table>
             <!-- Pick a cluster: <label for="clusterID"></label><input type="number" id="clusterID"> <br>
             Pick a week: <label for="week"></label><input type="number" id="week"> <br>-->
             <table id="buttonTable">
                 <tr>
-                    <td><button id="b1" class="buttonFinish">Show Sensor Locations and Clusters!</button> </td>
-                    <td><button id="b2" class="buttonFinish">Heat 'em Up!</button></td>
-                    <td><button id="b3" class="buttonFinish">Stacked Bar Chart</button></td>
-                    <td><button id="b4" class="buttonFinish">Get Average Cluster Value!</button></td>
-                    <td><button id="b5" class="buttonFinish">3D Cluster Graph</button></td>
+                    <td><button id="createVisualizationButton" class="buttonFinish">Visualize!</button> </td>
+                    <td><button id="updateButton" class="buttonFinish">Update Database!</button> </td>
+<!--                    <td><button id="sensorsAndClustersButton" class="buttonFinish">Show Sensor Locations and Clusters!</button> </td>-->
+<!--                    <td><button id="heatClustersButton" class="buttonFinish">Heat 'em Up!</button></td>-->
+<!--                    <td><button id="barChartButton" class="buttonFinish">Bar Chart!</button></td>-->
+<!--                    <td><button id="totalSensorsButton" class="buttonFinish">Get Average Cluster Value!</button></td>-->
+<!--                    <td><button id="clusterGraphButton" class="buttonFinish">3D Cluster Graph</button></td>-->
                 </tr>
             </table>
 
@@ -58,14 +60,12 @@
 
         </div>
         <div id="content-col-two">
-            <h3>Cluster average value</h3>
-            <div id="clusterAverage" class="map"></div>
             <h3>3D Clustering</h3>
             <div id="3DClustering"></div>
         </div>
 
         <div id="content-row-bottom">
-            <h3>Nothing, seriously nothing at all</h3>
+            <h3>Bar chart</h3>
             <div id="vis"></div>
         </div>
     </div>

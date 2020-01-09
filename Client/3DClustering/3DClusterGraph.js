@@ -1,4 +1,4 @@
-function visualize3DGraph(result) {
+function visualize3DGraph(latList, longList, p1List) {
    /* Plotly.d3.json(result, function (err, rows) {
 
         function unpack(rows, key) {
@@ -71,17 +71,17 @@ function visualize3DGraph(result) {
 
     });
 */
-    var data = result;
+    //var data = result;
 
 
     function unpack(rows, key) {
         return rows.map(function (row) { return row[key]; });
     }
 
-    var data1 = [{
-        x: unpack(data, 'lon'),
-        y: unpack(data, 'lat'),
-        z: unpack(data, 'P1'),
+    let data1 = [{
+        x: longList,//unpack(data, 'lon'),
+        y: latList,//unpack(data, 'lat'),
+        z: p1List,//unpack(data, 'P1'),
         mode: 'markers',
         type: 'scatter3d',
         marker: {
@@ -92,9 +92,9 @@ function visualize3DGraph(result) {
         alphahull: 7,
         opacity: 0.1,
         type: 'mesh3d',
-        x: unpack(data, 'lon'),
-        y: unpack(data, 'lat'),
-        z: unpack(data, 'P1')
+        x: longList,//unpack(data, 'lon'),
+        y: latList,//unpack(data, 'lat'),
+        z: p1List//unpack(data, 'P1')
     }];
 
     var layout = {
