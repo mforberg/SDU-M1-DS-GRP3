@@ -20,14 +20,10 @@ spark = SparkSession(sc)
 
 
 # Loads data.
-#dataset = spark.read.format("libsvm").load("data/mllib/sample_kmeans_data.txt")
 df = spark.read.option("header", "true").csv("/user/root/data/*.csv")
-df.printSchema()
 df_notnull = df.filter(F.col("lon").isNotNull() & F.col("lat").isNotNull() & F.col('P1').isNotNull() & F.col('timestamp').isNotNull())
 df = df_notnull
 df_timestamp = df.withColumn('timestamp', df['timestamp'].substr(1, 7))
-df_timestamp.printSchema()
-df_timestamp.show(5)
 df = df_timestamp
 timestamp = df.collect()[0][5]
 
