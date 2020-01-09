@@ -1,14 +1,14 @@
 let location_map;
 let heat_map;
-let cluster_average;
+// let cluster_average;
 document.addEventListener("DOMContentLoaded", function(event ){
     location_map = L.map('locationmap');
     heat_map = L.map('sensorheat');
-    cluster_average = L.map('clusterAverage');
+    // cluster_average = L.map('clusterAverage');
 });
 
-function visualize_location_of_sensors_and_clusters(result){
-    // Retrieve sensors and clusters from result.
+function visualize_all_graphs(result){
+    //instantiate
     let sensors = result['sensor_location'];
     let clusters = result['clusters'];
     let normalize_values = result['normalize_values'];
@@ -16,71 +16,55 @@ function visualize_location_of_sensors_and_clusters(result){
     let max = normalize_values[0]['high'];
     let latList = [];
     let longList = [];
+    let idList = [];
+    let p1List = [];
+    let colorList = [];
     clusters.forEach(element => {
+        // TODO: use this when lat and lon is normalized
         // latList.push(denormalize(element['lat'], max, min));
         // longList.push(denormalize(element['lon'], max, min));
         latList.push(element['lat']);
-        longList.push(element['lat']);
-    });
-    let latMid = getMedianFromList(latList, 0, latList.length);
-    let longMid = getMedianFromList(longList, 0, longList.length);
-    location_map.setView([latMid, longMid], 11);
-    makeSensorDots(sensors, location_map);
-    makeClusterCircles(latList, longList, location_map);
-    addMap(location_map);
-}
-
-function visualize_heatmap(result){
-    let heatList = [];
-    let latList = [];
-    let longList = [];
-    result.forEach(element => {
-        let temp = [];
-        latList.push(element['lat']);
         longList.push(element['lon']);
-        temp.push(element['lat']);
-        temp.push(element['lon']);
-        //TODO: Convert P1 to an intensity
-        temp.push(element['P1']);
-        heatList.push(temp);
-    });
-    let latMid = getMedianFromList(latList, 0, latList.length);
-    let longMid = getMedianFromList(longList, 0, longList.length);
-    heat_map.setView([latMid, longMid], 11);
-    let heat = L.heatLayer(
-        heatList // lat, lng, intensity
-    , {radius: 15}).addTo(heat_map);
-    addMap(heat_map);
-}
-
-function visualize_clusters_average(result){
-    let latList = [];
-    let longList = [];
-    let colorList = [];
-    result.forEach(element => {
-        latList.push(element['lat']);
-        longList.push(element['lon']);
+        idList.push(element['id']);
+        p1List.push(denormalize(element['P1'], max, min));
         // TODO: Check when true data is received.
         let value = (1.0 - element['P1']) * 240;
         colorList.push("hsl(" + value + ", 100%, 50%)");
     });
-    let latMid = getMedianFromList(latList, 0, latList.length);
-    let longMid = getMedianFromList(longList, 0, longList.length);
-    cluster_average.setView([latMid, longMid], 11);
-    visualize_clusters_with_color(result, cluster_average, colorList);
-    addMap(cluster_average);
+    // Visualize location of sensors and clusters on location map
+    location_map_visualization(sensors, latList, longList, colorList, idList);
+    // Visualize heat on heatmap
+    heat_map_visualization(p1List, latList, longList);
+    // Visualize bar chart
+    visualize_bar_chart(idList, p1List);
+    // 3D graph of clusters
+    visualize3DGraph(latList, longList, p1List);
+    // Visualize normal maps
+    setViews(latList, longList);
 }
 
-function visualize_clusters_with_color(result, map, colorList){
-    for(let i = 0; i < result.length; i++) {
-        let circle = L.circle([result[i]['lat'], result[i]['lon']], {
-            color: colorList[i],
-            //color: "hsl(100, 100%, 50%)",
-            fillColor: '#0000ff',
-            fillOpacity: 0,
-            radius: result[i]['range']
-        }).addTo(map);
+function location_map_visualization(sensors, latList, longList, colorList, idList){
+    makeSensorDots(sensors, location_map);
+    makeClusterCircles(latList, longList, idList, colorList, location_map);
+    addMap(location_map);
+}
+
+
+function heat_map_visualization(p1List, latList, longList){
+    let heatList = [];
+    for (let i = 0; i < p1List.length; i++){
+        let heatTemp = [];
+        heatTemp.push(latList[i]);
+        heatTemp.push(longList[i]);
+        //TODO: Convert P1 to an intensity
+        heatTemp.push(p1List[i]);
+        heatList.push(heatTemp);
     }
+
+    let heat = L.heatLayer(
+        heatList // lat, lng, intensity
+        , {radius: 15}).addTo(heat_map);
+    addMap(heat_map);
 }
 
 function getMedianFromList(pointList, startInt, amount){
@@ -106,14 +90,14 @@ function makeSensorDots(result, map) {
     }
 }
 
-function makeClusterCircles(latList, longList, map){
-    for(let i = 0; i < latList.length; i++) {
+function makeClusterCircles(latList, longList, idList, colorList, map){
+    for(let i = 0; i < idList.length; i++) {
         let circle = L.circle([latList[i], longList[i]], {
-            color: 'blue',
+            color: colorList[i],
             fillColor: '#0000ff',
             fillOpacity: 0,
-            radius: 2
-        }).addTo(map);
+            radius: 1000
+        }).addTo(map).bindPopup("<b>ID</b><br />" + idList[i]);
     }
 }
 
@@ -126,6 +110,94 @@ function addMap(map){
     }).addTo(map);
 }
 
+function setViews(latList, longList){
+    let latMid = getMedianFromList(latList, 0, latList.length);
+    let longMid = getMedianFromList(longList, 0, longList.length);
+    location_map.setView([latMid, longMid], 11);
+    heat_map.setView([latMid, longMid], 11);
+    // cluster_average.setView([latMid, longMid], 11);
+}
+
 function denormalize(normalValue, max, min) {
     return normalValue * (max - min) + min;
 }
+
+// function visualize_location_of_sensors_and_clusters(result){
+//     // Retrieve sensors and clusters from result.
+//     let sensors = result['sensor_location'];
+//     let clusters = result['clusters'];
+//     let normalize_values = result['normalize_values'];
+//     let min = normalize_values[0]['low'];
+//     let max = normalize_values[0]['high'];
+//     let latList = [];
+//     let longList = [];
+//     let idList = [];
+//     clusters.forEach(element => {
+//         // latList.push(denormalize(element['lat'], max, min));
+//         // longList.push(denormalize(element['lon'], max, min));
+//         latList.push(element['lat']);
+//         longList.push(element['lon']);
+//         idList.push(element['id']);
+//     });
+//     let latMid = getMedianFromList(latList, 0, latList.length);
+//     let longMid = getMedianFromList(longList, 0, longList.length);
+//     location_map.setView([latMid, longMid], 11);
+//     makeSensorDots(sensors, location_map);
+//     makeClusterCircles(latList, longList, idList, location_map);
+//     addMap(location_map);
+// }
+
+// function visualize_heatmap(result){
+//     let heatList = [];
+//     let latList = [];
+//     let longList = [];
+//     result.forEach(element => {
+//         let temp = [];
+//         latList.push(element['lat']);
+//         longList.push(element['lon']);
+//         temp.push(element['lat']);
+//         temp.push(element['lon']);
+//         //TODO: Convert P1 to an intensity
+//         temp.push(element['P1']);
+//         heatList.push(temp);
+//     });
+//     let latMid = getMedianFromList(latList, 0, latList.length);
+//     let longMid = getMedianFromList(longList, 0, longList.length);
+//     heat_map.setView([latMid, longMid], 11);
+//     let heat = L.heatLayer(
+//         heatList // lat, lng, intensity
+//     , {radius: 15}).addTo(heat_map);
+//     addMap(heat_map);
+// }
+
+// function visualize_clusters_average(result){
+//     let latList = [];
+//     let longList = [];
+//     let colorList = [];
+//     result.forEach(element => {
+//         latList.push(element['lat']);
+//         longList.push(element['lon']);
+//         // TODO: Check when true data is received.
+//         let value = (1.0 - element['P1']) * 240;
+//         colorList.push("hsl(" + value + ", 100%, 50%)");
+//     });
+//     let latMid = getMedianFromList(latList, 0, latList.length);
+//     let longMid = getMedianFromList(longList, 0, longList.length);
+//     cluster_average.setView([latMid, longMid], 11);
+//     visualize_clusters_with_color(result, cluster_average, colorList);
+//     addMap(cluster_average);
+// }
+
+// function visualize_clusters_with_color(result, map, colorList){
+//     for(let i = 0; i < result.length; i++) {
+//         let circle = L.circle([result[i]['lat'], result[i]['lon']], {
+//             color: colorList[i],
+//             //color: "hsl(100, 100%, 50%)",
+//             fillColor: '#0000ff',
+//             fillOpacity: 0,
+//             radius: 1000
+//         }).addTo(map).bindPopup("this is circle");
+//
+//         // circle.bindPopup("I am a circle.");
+//     }
+// }

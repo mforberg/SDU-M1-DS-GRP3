@@ -5,6 +5,15 @@ $aResult = array();
 if( !isset($_GET['functionname']) ) { $aResult['error'] = 'No function name!'; }
 if( !isset($aResult['error']) ) {
     switch($_GET['functionname']) {
+        case 'getData':
+            if(!isset($_GET['monthnumber']) || !isset($_GET['yearnumber'])) {
+                $aResult['error'] = 'No function arguments!';
+            } else {
+                $aResult['result']['sensor_location'] = get_sensor_locations();
+                $aResult['result']['clusters'] = get_clusters($_GET['monthnumber'], $_GET['yearnumber']);
+                $aResult['result']['normalize_values'] = get_normalize_values($_GET['monthnumber'], $_GET['yearnumber']);
+            }
+            break;
         case 'getLocationData':
             if(!isset($_GET['monthnumber']) || !isset($_GET['yearnumber'])) {
                 $aResult['error'] = 'No function arguments!';
@@ -28,7 +37,7 @@ if( !isset($aResult['error']) ) {
             }
             break;
         case 'getClustersAndNormalValues':
-            if(!isset($_GET['yearnumber']) || !isset($_GET['clusterID'])) {
+            if(!isset($_GET['monthnumber']) || !isset($_GET['yearnumber'])) {
                 $aResult['error'] = 'No function arguments!';
             } else {
                 $aResult['result']['clusters'] = get_clusters($_GET['monthnumber'], $_GET['yearnumber']);
@@ -38,22 +47,22 @@ if( !isset($aResult['error']) ) {
                 }
             }
             break;
-        case 'getSensors':
-            if(!isset($_GET['monthnumber']) || !isset($_GET['yearnumber'])) {
-                $aResult['error'] = 'No function arguments!';
-            } else {
-                $aResult['result'] = get_sensors_pm($_GET['monthnumber'], $_GET['yearnumber']);
-                if(empty($aResult['result'])){
-                    $aResult['error'] = 'No data found!';
-                }
-            }
-            break;
-        case 'getTotalSensors':
-            $aResult['result'] = get_average_cluster_pm();
-            if(empty($aResult['result'])){
-                $aResult['error'] = 'No data found!';
-            }
-            break;
+//        case 'getSensors':
+//            if(!isset($_GET['monthnumber']) || !isset($_GET['yearnumber'])) {
+//                $aResult['error'] = 'No function arguments!';
+//            } else {
+//                $aResult['result'] = get_sensors_pm($_GET['monthnumber'], $_GET['yearnumber']);
+//                if(empty($aResult['result'])){
+//                    $aResult['error'] = 'No data found!';
+//                }
+//            }
+//            break;
+//        case 'getTotalSensors':
+//            $aResult['result'] = get_average_cluster_pm();
+//            if(empty($aResult['result'])){
+//                $aResult['error'] = 'No data found!';
+//            }
+//            break;
         default:
             $aResult['error'] = 'Not found function '.$_GET['functionname'].'!';
             break;
@@ -95,9 +104,9 @@ function get_sensor_locations(){
 function get_clusters($month, $year){
     $conn = getConnection();
     $statement = $conn->prepare('
-                SELECT lat, lon, P1 
+                SELECT id, lat, lon, P1 
                 FROM (
-                    SELECT lat, lon, SUBSTRING(ts, 1, 4) as _year, SUBSTRING(ts, 6, 2) as _month, P1 
+                    SELECT id, lat, lon, SUBSTRING(ts, 1, 4) as _year, SUBSTRING(ts, 6, 2) as _month, P1 
                     FROM clusters) x
                 WHERE _year = :year AND _month = :month
                 ');
