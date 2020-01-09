@@ -5,22 +5,28 @@ from pyspark.sql.session import SparkSession
 from pyspark.ml.feature import VectorAssembler
 from pyspark.sql import functions as F
 from normalize import get_min_max
-from pyspark.sql.functions import udf
+#from pyspark.sql.functions import udf
 from pyspark.sql.types import DoubleType
 from pyspark.sql.functions import UserDefinedFunction
+import json
+import os
+from pyspark import SparkConf, SparkContext
 
-
-sc = SparkContext(appName='Clustering').getOrCreate()
+conf = SparkConf().set('spark.executor.memory', '4g').set('spark.driver.memory', '8g') # just throw more ram at the problem LUL
+print(conf.toDebugString())
+sc = SparkContext(appName='Clustering', conf=conf).getOrCreate()
 spark = SparkSession(sc)
 
 
 
 # Loads data.
-#dataset = spark.read.format("libsvm").load("data/mllib/sample_kmeans_data.txt")
-df = spark.read.option("header", "true").csv("/user/root/data/sofia.csv")
-df_notnull = df.filter(F.col("lon").isNotNull() & F.col("lat").isNotNull() & F.col('P1').isNotNull())
+df = spark.read.option("header", "true").csv("/user/root/data/*.csv")
+df_notnull = df.filter(F.col("lon").isNotNull() & F.col("lat").isNotNull() & F.col('P1').isNotNull() & F.col('timestamp').isNotNull())
 df = df_notnull
-print("COUNT:" + str(df.count()))
+df_timestamp = df.withColumn('timestamp', df['timestamp'].substr(1, 7))
+df = df_timestamp
+timestamp = df.collect()[0][5]
+
 
 features = ['P1', 'lon', 'lat']
 vector_assembler = VectorAssembler(inputCols=features, outputCol="features")
@@ -46,12 +52,7 @@ df_cloned = spark.createDataFrame(min_max_avg_df.rdd, min_max_avg_df.schema)
 max = df_cloned.agg(F.max(df_cloned.avg),F.max(df_cloned.lon),F.max(df_cloned.lat)).collect()[0]
 min = df_cloned.agg(F.min(df_cloned.avg),F.min(df_cloned.lon),F.min(df_cloned.lat)).collect()[0]
 
-#Find min and max from values
-print(max)
 tuple = get_min_max(min, max)
-print (tuple)
-
-df_cloned.show(100)
 
 # UDF that normalizes values
 udf = UserDefinedFunction(lambda x: (x - tuple[0]) / (tuple[1] - tuple[0]), DoubleType())
@@ -62,13 +63,8 @@ df_normalize_lat = df_cloned.select(*[udf(column).alias('lat') if column == 'lat
 df_normalize_lon = df_normalize_lat.select(*[udf(column).alias('lon') if column == 'lon' else column for column in df_normalize_lat.columns])
 df_normalize_p1 = df_normalize_lon.select(*[udf(column).alias('avg') if column == 'avg' else column for column in df_normalize_lat.columns])
 
-df_normalize_p1.show(5)
-
 # Better naming
 df_complete = df_normalize_p1
-
-print("SPAGHETTI")
-df_complete.printSchema()
 
 features_normalized = ['lat', 'lon', 'avg']
 vector_assembler_normalized = VectorAssembler(inputCols=features_normalized, outputCol="features")
@@ -76,17 +72,15 @@ vector_assembler_normalized = VectorAssembler(inputCols=features_normalized, out
 dataframe_t_normalized = vector_assembler_normalized.transform(df_complete)
 
 dataframe_t_normalized = dataframe_t_normalized.withColumn("id", F.monotonically_increasing_id())
-print("Look here nice")
-dataframe_t_normalized.printSchema()
-dataframe_t_normalized.show(5)
-print("COUNT")
-print(dataframe_t_normalized.count())
 
-# Trains a k-means model.
-k_list = []
-for k in range (2, 80):
 
-    kmeans = KMeans().setK(k).setSeed(123).setFeaturesCol("features")
+# Kmeans to test optimal cluster amount
+""" k_list = []
+min_clusters = 20
+max_clusters = 50
+for k in range (min_clusters, max_clusters):
+
+    kmeans = KMeans().setK(5).setSeed(177013).setFeaturesCol("features")
     model = kmeans.fit(dataframe_t_normalized) # was dataset
 
     # Make predictions
@@ -96,17 +90,49 @@ for k in range (2, 80):
     evaluator = ClusteringEvaluator()
 
     silhouette = evaluator.evaluate(predictions)
-    k_list.append(silhouette)
     print("Silhouette with squared euclidean distance = " + str(silhouette))
+    k_list.append((k, str(silhouette)))
 
-# Shows the result.
+
+highest_k = max(k_list[1])
+
+print("OPTIMAL K: " + str(highest_k[0][0]) + " WITH A SILHOUETTE SCORE OF: " + str(highest_k[0][1])) """
+
+# Single KMeans
+k = 5
+kmeans = KMeans().setK(k).setSeed(177013).setFeaturesCol("features")
+model = kmeans.fit(dataframe_t_normalized) # was dataset
+
+# Make predictions
+predictions = model.transform(dataframe_t_normalized) # was dataset
+
+# Evaluate clustering by computing Silhouette score
+evaluator = ClusteringEvaluator()
+
+silhouette = evaluator.evaluate(predictions)
+print("Silhouette with squared euclidean distance = " + str(silhouette))
+
+
 centers = model.clusterCenters()
-print("Cluster Centers: ")
+min = tuple[0]
+max = tuple[1]
+ts = timestamp 
+values = list()
+values.append(min)
+values.append(max)
+values.append(ts)
+
+temp_list = list()
 for center in centers:
-    print(center)
+    center_list = list()
+    center_list.append(center[0])
+    center_list.append(center[1])
+    center_list.append(center[2])
+    temp_list.append(center_list)
+values.append(temp_list)
+print(json.dumps(values))
 
-dataframe_t.printSchema()
-print(model.summary.clusterSizes)
-predictions.printSchema()
-
+# Doesn't work, fix later.
+os.system('echo "%s" | hadoop fs -put - /user/root/json/%s.txt' %(json.dumps(values), ts))
+os.system('echo | hdfs dfs -copyToLocal -f /user/root/json/%s.txt Users/forberg/developer' %(ts))
 # Super functional kmeans
