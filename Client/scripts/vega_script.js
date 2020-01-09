@@ -4,15 +4,14 @@ function visualize_bar_chart(idList, p1List){
     for (let i = 0; i < idList.length; i++){
         let inner = {};
         inner['id'] = idList[i];
-        inner['p1'] = p1List[i];
+        inner['p1'] = p1List[i].toFixed(2);
         exampleFormat.push(inner);
     }
 
     let jsonData = JSON.stringify(exampleFormat);
-    console.log(jsonData);
     let yourVlSpec = {
         "$schema": "https://vega.github.io/schema/vega/v5.json",
-        "width": 400,
+        "width": 600,
         "height": 200,
         "padding": 5,
 
@@ -52,8 +51,8 @@ function visualize_bar_chart(idList, p1List){
         ],
 
         "axes": [
-            { "orient": "bottom", "scale": "xscale" },
-            { "orient": "left", "scale": "yscale" }
+            { "orient": "bottom", "scale": "xscale", "title": "Sensor ID" },
+            { "orient": "left", "scale": "yscale", "title": "P10 Value" }
         ],
 
         "marks": [

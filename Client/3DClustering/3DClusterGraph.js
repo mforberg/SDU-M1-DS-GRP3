@@ -1,103 +1,17 @@
 function visualize3DGraph(latList, longList, p1List) {
-   /* Plotly.d3.json(result, function (err, rows) {
-
-        function unpack(rows, key) {
-            return rows.map(function (row) { return row[key]; });
-        }
-
-        var data = [{
-            x: unpack(rows, 'lon'),
-            y: unpack(rows, 'lat'),
-            z: unpack(rows, 'P1'),
-            mode: 'markers',
-            type: 'scatter3d',
-            marker: {
-                color: 'rgb(23, 190, 207)',
-                size: 2
-            }
-        }, {
-            alphahull: 7,
-            opacity: 0.1,
-            type: 'mesh3d',
-            x: unpack(rows, 'lon'),
-            y: unpack(rows, 'lat'),
-            z: unpack(rows, 'P1')
-        }];
-
-        var layout = {
-            autosize: true,
-            height: 480,
-            scene: {
-                aspectratio: {
-                    x: 1,
-                    y: 1,
-                    z: 1
-                },
-                camera: {
-                    center: {
-                        x: 0,
-                        y: 0,
-                        z: 0
-                    },
-                    eye: {
-                        x: 1.25,
-                        y: 1.25,
-                        z: 1.25
-                    },
-                    up: {
-                        x: 0,
-                        y: 0,
-                        z: 1
-                    }
-                },
-                xaxis: {
-                    type: 'linear',
-                    zeroline: false
-                },
-                yaxis: {
-                    type: 'linear',
-                    zeroline: false
-                },
-                zaxis: {
-                    type: 'linear',
-                    zeroline: false
-                }
-            },
-            title: '3D Clustering',
-            width: 477
-        };
-
-        Plotly.newPlot('3DClustering', data, layout);
-
-    });
-*/
-    //var data = result;
-
-
-    function unpack(rows, key) {
-        return rows.map(function (row) { return row[key]; });
-    }
-
     let data1 = [{
-        x: longList,//unpack(data, 'lon'),
-        y: latList,//unpack(data, 'lat'),
-        z: p1List,//unpack(data, 'P1'),
+        x: longList,
+        y: latList,
+        z: p1List,
         mode: 'markers',
         type: 'scatter3d',
         marker: {
             color: 'rgb(23, 190, 207)',
             size: 2
         }
-    }, {
-        alphahull: 7,
-        opacity: 0.1,
-        type: 'mesh3d',
-        x: longList,//unpack(data, 'lon'),
-        y: latList,//unpack(data, 'lat'),
-        z: p1List//unpack(data, 'P1')
     }];
 
-    var layout = {
+    let layout = {
         autosize: true,
         height: 480,
         scene: {
@@ -124,14 +38,17 @@ function visualize3DGraph(latList, longList, p1List) {
                 }
             },
             xaxis: {
+                title: 'Longitude',
                 type: 'linear',
                 zeroline: false
             },
             yaxis: {
+                title: 'Latitude',
                 type: 'linear',
                 zeroline: false
             },
             zaxis: {
+                title: 'P10',
                 type: 'linear',
                 zeroline: false
             }
@@ -142,4 +59,4 @@ function visualize3DGraph(latList, longList, p1List) {
 
     Plotly.newPlot('3DClustering', data1, layout);
 
-};
+}
