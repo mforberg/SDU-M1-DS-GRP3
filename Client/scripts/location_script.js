@@ -18,22 +18,15 @@ function visualize_all_graphs(result){
     let longList = [];
     let idList = [];
     let p1List = [];
-    let colorList = [];
     clusters.forEach(element => {
-        // TODO: use this when lat and lon is normalized
-        // latList.push(denormalize(element['lat'], max, min));
-        // longList.push(denormalize(element['lon'], max, min));
-        latList.push(element['lat']);
-        longList.push(element['lon']);
+        latList.push(denormalize(element['lat'], max, min));
+        longList.push(denormalize(element['lon'], max, min));
         idList.push(element['id']);
         p1List.push(denormalize(element['P1'], max, min));
-        // TODO: Check when true data is received.
-        let value = (1.0 - element['P1']) * 240;
-        colorList.push("hsl(" + value + ", 100%, 50%)");
     });
     // Visualize location of sensors and clusters on location map
-    location_map_visualization(sensors, latList, longList, colorList, idList);
-    // Visualize heat on heatmap
+    location_map_visualization(sensors, latList, longList, idList, p1List);
+    // Visualize heat on heat map
     heat_map_visualization(p1List, latList, longList);
     // Visualize bar chart
     visualize_bar_chart(idList, p1List);
@@ -43,12 +36,20 @@ function visualize_all_graphs(result){
     setViews(latList, longList);
 }
 
-function location_map_visualization(sensors, latList, longList, colorList, idList){
+function location_map_visualization(sensors, latList, longList, idList, p1List){
+    let normal_list = create_normalize_list(p1List);
+    // get color
+    let colorList = [];
+    normal_list.forEach(variable => {
+        // TODO: Check when true data is received.
+        let value = (1.0 - variable) * 240;
+        colorList.push("hsl(" + value + ", 100%, 50%)");
+    });
+
     makeSensorDots(sensors, location_map);
     makeClusterCircles(latList, longList, idList, colorList, location_map);
     addMap(location_map);
 }
-
 
 function heat_map_visualization(p1List, latList, longList){
     let heatList = [];
@@ -56,7 +57,6 @@ function heat_map_visualization(p1List, latList, longList){
         let heatTemp = [];
         heatTemp.push(latList[i]);
         heatTemp.push(longList[i]);
-        //TODO: Convert P1 to an intensity
         heatTemp.push(p1List[i]);
         heatList.push(heatTemp);
     }
@@ -82,8 +82,8 @@ function getMedianFromList(pointList, startInt, amount){
 function makeSensorDots(result, map) {
     for(let i = 0; i < result.length; i++){
         let circle = L.circle([result[i]['lat'], result[i]['lon']], {
-            color: 'red',
-            fillColor: '#f03',
+            color: '#505050',
+            fillColor: '#000000',
             fillOpacity: 0.5,
             radius: 0.3
         }).addTo(map);
@@ -92,6 +92,7 @@ function makeSensorDots(result, map) {
 
 function makeClusterCircles(latList, longList, idList, colorList, map){
     for(let i = 0; i < idList.length; i++) {
+        console.log(latList[i]);
         let circle = L.circle([latList[i], longList[i]], {
             color: colorList[i],
             fillColor: '#0000ff',
@@ -118,8 +119,31 @@ function setViews(latList, longList){
     // cluster_average.setView([latMid, longMid], 11);
 }
 
-function denormalize(normalValue, max, min) {
-    return normalValue * (max - min) + min;
+function denormalize(normalValue, high, low) {
+    return Number(Number(normalValue) * (Number(high) - Number(low)) + Number(low));
+}
+
+function normalize(value, low, high){
+    return (value - low) / (high - low);
+}
+
+function create_normalize_list(list_of_numbers){
+    let low = 10000;
+    let high = -1;
+    // find highest and lowest value
+    list_of_numbers.forEach(variable => {
+        if (variable > high){
+            high = variable;
+        } else if (variable < low){
+            low = variable;
+        }
+    });
+    // normalize
+    let normal = [];
+    list_of_numbers.forEach(variable => {
+        normal.push(normalize(variable, low, high));
+    });
+    return normal;
 }
 
 // function visualize_location_of_sensors_and_clusters(result){

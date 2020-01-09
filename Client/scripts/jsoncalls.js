@@ -22,6 +22,31 @@ $(document).ready(function () {
                 console.log('STATUS: ' + textStatus + '\nERROR THROWN: ' + errorThrown);
             }
         });
+    });
+
+    $("#updateButton").click(function () {
+        $.ajax({
+            type: "GET",
+            url: 'database_connection.php',
+            dataType: 'json',
+            data: {
+                functionname: 'updateData'
+            },
+
+            success: function (obj) {
+                if (!('error' in obj)) {
+                    console.log(obj.result);
+                }
+                else {
+                    console.log(obj.error);
+                }
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                console.log('STATUS: ' + textStatus + '\nERROR THROWN: ' + errorThrown);
+            }
+        });
+    });
+
 
     // $("#sensorsAndClustersButton").click(function () {
     //     $.ajax({
@@ -46,33 +71,32 @@ $(document).ready(function () {
     //         }
     //     });
 
-        // $.ajax({
-        //     type: "GET",
-        //     url: 'database_connection.php',
-        //     dataType: 'json',
-        //     data: {
-        //         functionname: 'getSpecificCluster',
-        //         weeknumber: document.getElementById("week").value,
-        //         sensorID: document.getElementById("clusterID").value
-        //     },
-        //
-        //     success: function (obj) {
-        //         if( !('error' in obj) ) {
-        //
-        //             // put visualization
-        //             console.log(obj.result);
-        //
-        //         }
-        //         else {
-        //             console.log(obj.error);
-        //         }
-        //     },
-        //
-        //     error: function (xhr, textStatus, errorThrown){
-        //         console.log('STATUS: '+textStatus+'\nERROR THROWN: '+errorThrown);
-        //     }
-        // });
-    });
+    // $.ajax({
+    //     type: "GET",
+    //     url: 'database_connection.php',
+    //     dataType: 'json',
+    //     data: {
+    //         functionname: 'getSpecificCluster',
+    //         weeknumber: document.getElementById("week").value,
+    //         sensorID: document.getElementById("clusterID").value
+    //     },
+    //
+    //     success: function (obj) {
+    //         if( !('error' in obj) ) {
+    //
+    //             // put visualization
+    //             console.log(obj.result);
+    //
+    //         }
+    //         else {
+    //             console.log(obj.error);
+    //         }
+    //     },
+    //
+    //     error: function (xhr, textStatus, errorThrown){
+    //         console.log('STATUS: '+textStatus+'\nERROR THROWN: '+errorThrown);
+    //     }
+    // });
     // $("#heatClustersButton").click(function () {
     //     $.ajax({
     //         type: "GET",
