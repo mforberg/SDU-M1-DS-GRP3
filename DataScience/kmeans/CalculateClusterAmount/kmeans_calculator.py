@@ -10,9 +10,11 @@ from pyspark.sql.types import DoubleType
 from pyspark.sql.functions import UserDefinedFunction
 import json
 import os
+from pyspark import SparkConf, SparkContext
 
-
-sc = SparkContext(appName='Clustering').getOrCreate()
+conf = SparkConf().set('spark.executor.memory', '4g').set('spark.driver.memory', '8g') # just throw more ram at the problem LUL
+print(conf.toDebugString())
+sc = SparkContext(appName='Clustering', conf=conf).getOrCreate()
 spark = SparkSession(sc)
 
 
@@ -20,11 +22,14 @@ spark = SparkSession(sc)
 # Loads data.
 #dataset = spark.read.format("libsvm").load("data/mllib/sample_kmeans_data.txt")
 df = spark.read.option("header", "true").csv("/user/root/data/*.csv")
+df.printSchema()
+df_notnull = df.filter(F.col("lon").isNotNull() & F.col("lat").isNotNull() & F.col('P1').isNotNull() & F.col('timestamp').isNotNull())
+df = df_notnull
 df_timestamp = df.withColumn('timestamp', df['timestamp'].substr(1, 7))
+df_timestamp.printSchema()
+df_timestamp.show(5)
 df = df_timestamp
 timestamp = df.collect()[0][5]
-df_notnull = df.filter(F.col("lon").isNotNull() & F.col("lat").isNotNull() & F.col('P1').isNotNull())
-df = df_notnull
 
 
 features = ['P1', 'lon', 'lat']
@@ -73,13 +78,13 @@ dataframe_t_normalized = vector_assembler_normalized.transform(df_complete)
 dataframe_t_normalized = dataframe_t_normalized.withColumn("id", F.monotonically_increasing_id())
 
 
-# Trains a k-means model.
-k_list = []
-min_clusters = 2
-max_clusters = 4
+# Kmeans to test optimal cluster amount
+""" k_list = []
+min_clusters = 20
+max_clusters = 50
 for k in range (min_clusters, max_clusters):
 
-    kmeans = KMeans().setK(k).setSeed(123).setFeaturesCol("features")
+    kmeans = KMeans().setK(5).setSeed(177013).setFeaturesCol("features")
     model = kmeans.fit(dataframe_t_normalized) # was dataset
 
     # Make predictions
@@ -89,13 +94,27 @@ for k in range (min_clusters, max_clusters):
     evaluator = ClusteringEvaluator()
 
     silhouette = evaluator.evaluate(predictions)
-    #print("Silhouette with squared euclidean distance = " + str(silhouette))
+    print("Silhouette with squared euclidean distance = " + str(silhouette))
     k_list.append((k, str(silhouette)))
 
 
 highest_k = max(k_list[1])
 
-print("OPTIMAL K: " + str(highest_k[0][0]) + " WITH A SILHOUETTE SCORE OF: " + str(highest_k[0][1]))
+print("OPTIMAL K: " + str(highest_k[0][0]) + " WITH A SILHOUETTE SCORE OF: " + str(highest_k[0][1])) """
+
+# Single KMeans
+k = 5
+kmeans = KMeans().setK(k).setSeed(177013).setFeaturesCol("features")
+model = kmeans.fit(dataframe_t_normalized) # was dataset
+
+# Make predictions
+predictions = model.transform(dataframe_t_normalized) # was dataset
+
+# Evaluate clustering by computing Silhouette score
+evaluator = ClusteringEvaluator()
+
+silhouette = evaluator.evaluate(predictions)
+print("Silhouette with squared euclidean distance = " + str(silhouette))
 
 
 centers = model.clusterCenters()
@@ -107,13 +126,14 @@ values.append(min)
 values.append(max)
 values.append(ts)
 
+temp_list = list()
 for center in centers:
-    temp_list = list()
-    temp_list.append(center[0])
-    temp_list.append(center[1])
-    temp_list.append(center[2])
-    values.append(temp_list)
-
+    center_list = list()
+    center_list.append(center[0])
+    center_list.append(center[1])
+    center_list.append(center[2])
+    temp_list.append(center_list)
+values.append(temp_list)
 print(json.dumps(values))
 
 # Doesn't work, fix later.
