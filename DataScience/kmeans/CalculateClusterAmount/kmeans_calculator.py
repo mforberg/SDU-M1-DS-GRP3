@@ -73,14 +73,14 @@ dataframe_t_normalized = vector_assembler_normalized.transform(df_complete)
 
 dataframe_t_normalized = dataframe_t_normalized.withColumn("id", F.monotonically_increasing_id())
 
-
+""" 
 # Kmeans to test optimal cluster amount
-""" k_list = []
-min_clusters = 20
+k_list = []
+min_clusters = 15
 max_clusters = 50
 for k in range (min_clusters, max_clusters):
 
-    kmeans = KMeans().setK(5).setSeed(177013).setFeaturesCol("features")
+    kmeans = KMeans().setK(k).setSeed(177013).setFeaturesCol("features")
     model = kmeans.fit(dataframe_t_normalized) # was dataset
 
     # Make predictions
@@ -90,16 +90,19 @@ for k in range (min_clusters, max_clusters):
     evaluator = ClusteringEvaluator()
 
     silhouette = evaluator.evaluate(predictions)
-    print("Silhouette with squared euclidean distance = " + str(silhouette))
+    # print("Silhouette with squared euclidean distance = " + str(silhouette))
     k_list.append((k, str(silhouette)))
 
+for item in k_list:
+    print("K: " + str(item[0]) + " SILHOUETTE: " + item[1])
 
+print(" BLANK LINE LUL ")
 highest_k = max(k_list[1])
 
 print("OPTIMAL K: " + str(highest_k[0][0]) + " WITH A SILHOUETTE SCORE OF: " + str(highest_k[0][1])) """
 
 # Single KMeans
-k = 5
+k = 32
 kmeans = KMeans().setK(k).setSeed(177013).setFeaturesCol("features")
 model = kmeans.fit(dataframe_t_normalized) # was dataset
 
