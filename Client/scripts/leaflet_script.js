@@ -129,14 +129,6 @@ function normalize(value, low, high){
 function create_normalize_list_for_p(list_of_numbers){
     let low = 0;
     let high = 500;
-    // // find highest and lowest value
-    // list_of_numbers.forEach(variable => {
-    //     if (variable > high){
-    //         high = variable;
-    //     } else if (variable < low){
-    //         low = variable;
-    //     }
-    // });
     // normalize
     let normal = [];
     list_of_numbers.forEach(variable => {
