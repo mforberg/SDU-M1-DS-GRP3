@@ -1,5 +1,6 @@
 Client/.idea/*
 Client/Leaflet.heat-gh-pages/demo/*
+Client/Leaflet.heat-gh-pages/demo/*.html
 DataScience/.idea/*
 DataScience/.vscode/*
 DataScience/data/csv/*
