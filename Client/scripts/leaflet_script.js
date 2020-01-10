@@ -92,8 +92,6 @@ function makeClusterCircles(latList, longList, idList, colorList, map){
     for(let i = 0; i < idList.length; i++) {
         let circle = L.circle([latList[i], longList[i]], {
             color: colorList[i],
-            fillColor: '#0000ff',
-            fillOpacity: 0,
             radius: 200
         }).addTo(map).bindPopup("<b>ID</b><br />" + idList[i]);
     }
