@@ -3,13 +3,12 @@ from pyspark.sql.session import SparkSession
 from pyspark.sql import functions as F
 import numpy as np
 import json
+import os
 
 
 
 sc = SparkContext(appName='Get Sensors').getOrCreate()
 spark = SparkSession(sc)
-
-# Read from cluster
 df = spark.read.option("header", "true").option("inferSchema", "true").csv("/user/root/data/sofia.csv")
 
 # Drop nulls
@@ -28,5 +27,7 @@ for row in unique_sensors.collect():
     sensor = [row.timestamp, row.lat, row.lon]
     sensors.append(sensor)
 print(json.dumps(sensors))
+
+os.system('echo "%s" | hadoop fs -put - /user/root/json/sensors.txt' %(json.dumps(values)))
 
 #print(spaghetti.toJSON())
