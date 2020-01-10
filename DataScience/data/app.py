@@ -5,7 +5,7 @@ import os
 sc = SparkContext(master='local', appName='Upload CSV files', )
 ss = SparkSession(sc)
  
-# Mac makes retarded .DS_Store files in directories will fuck with data
+# Mac makes .DS_Store files in directories will mess with data
 filePath = '/app/csv/.DS_Store'
 if os.path.exists(filePath):
     os.remove(filePath)
