@@ -5,14 +5,13 @@ from pyspark.sql.session import SparkSession
 from pyspark.ml.feature import VectorAssembler
 from pyspark.sql import functions as F
 from normalize import get_min_max
-#from pyspark.sql.functions import udf
 from pyspark.sql.types import DoubleType
 from pyspark.sql.functions import UserDefinedFunction
 import json
 import os
 from pyspark import SparkConf, SparkContext
 
-conf = SparkConf().set('spark.executor.memory', '4g').set('spark.driver.memory', '8g') # just throw more ram at the problem LUL
+conf = SparkConf().set('spark.executor.memory', '4g').set('spark.driver.memory', '8g') # needs more memory
 print(conf.toDebugString())
 sc = SparkContext(appName='Clustering', conf=conf).getOrCreate()
 spark = SparkSession(sc)
