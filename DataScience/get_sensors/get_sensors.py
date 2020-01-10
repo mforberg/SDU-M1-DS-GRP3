@@ -28,6 +28,6 @@ for row in unique_sensors.collect():
     sensors.append(sensor)
 print(json.dumps(sensors))
 
-os.system('echo "%s" | hadoop fs -put - /user/root/json/sensors.txt' %(json.dumps(values)))
+os.system('echo "%s" | hadoop fs -put - /user/root/json/sensors.txt' %(json.dumps(sensors)))
 
 #print(spaghetti.toJSON())
