@@ -51,7 +51,7 @@ function visualize_bar_chart(idList, p1List){
         ],
 
         "axes": [
-            { "orient": "bottom", "scale": "xscale", "title": "Sensor ID" },
+            { "orient": "bottom", "scale": "xscale", "title": "Cluster ID" },
             { "orient": "left", "scale": "yscale", "title": "P10 Value" }
         ],
 
