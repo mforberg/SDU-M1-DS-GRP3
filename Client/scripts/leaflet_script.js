@@ -1,6 +1,5 @@
 let location_map;
 let heat_map;
-// let cluster_average;
 document.addEventListener("DOMContentLoaded", function(event ){
     location_map = L.map('locationmap');
     heat_map = L.map('sensorheat');
