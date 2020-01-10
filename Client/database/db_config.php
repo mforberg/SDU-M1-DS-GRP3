@@ -11,7 +11,6 @@ class db_config {
 
     public function __construct()
     {
-
     }
 
     function getConnection()
