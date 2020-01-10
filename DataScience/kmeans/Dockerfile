@@ -1,6 +1,6 @@
 FROM bde2020/hadoop-base
 
-LABEL Name=kmeans Version=0.0.1 
+LABEL Name=kmeans_calculator Version=0.0.1 
 
 # Updating package manager
 RUN apt-get update
@@ -31,4 +31,4 @@ WORKDIR /app
 ADD . /app
 
 # running the python file at container startup
-CMD ["python3 Kmeans.py"]
+CMD ["python3 kmeans_calculator.py"]
