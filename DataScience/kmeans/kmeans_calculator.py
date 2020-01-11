@@ -126,10 +126,7 @@ values.append(ts)
 
 temp_list = list()
 for center in centers:
-    center_list = list()
-    center_list.append(center[0])
-    center_list.append(center[1])
-    center_list.append(center[2])
+    center_list = [center[0], center[1], center[2]]
     temp_list.append(center_list)
 values.append(temp_list)
 print(json.dumps(values))
