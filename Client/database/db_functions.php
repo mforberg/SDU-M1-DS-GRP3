@@ -45,6 +45,24 @@ class db_functions{
         return $result;
     }
 
+    function get_clustersP2($month, $year){
+        $conn = $this->db_config->getConnection();
+        $statement = $conn->prepare('
+                SELECT id, lat, lon, P2 
+                FROM (
+                    SELECT id, lat, lon, SUBSTRING(ts, 1, 4) as _year, SUBSTRING(ts, 6, 2) as _month, P2 
+                    FROM clusters) x
+               WHERE _year = :year AND _month = :month
+                ');
+        $statement->setFetchMode(PDO::FETCH_ASSOC);
+        $statement->bindParam(':year', $year);
+        $statement->bindParam(':month', $month);
+        $statement->execute();
+        $result = $statement->fetchAll();
+        $conn = null;
+        return $result;
+    }
+
     function get_normalize_values($month, $year){
         $conn = $this->db_config->getConnection();
         $statement = $conn->prepare('
@@ -83,6 +101,25 @@ class db_functions{
         }
     }
 
+    function update_P2_Clusters(){
+        foreach (glob("jsondata/clusters/*.json") as $filepath) {
+            $obj = json_decode(file_get_contents($filepath), true);
+            $low = $obj[0];
+            $high = $obj[1];
+            $ts = $obj[2];
+            $this->insert_normalize($ts, $low, $high);
+            $clusters = $obj[3];
+            foreach ($clusters as $cluster){
+                $lat = $cluster[0];
+                $lon = $cluster[1];
+                $P2 = $cluster[2];
+                $this->insert_cluster($lat, $lon, $ts, $P2);
+            }
+            $filename = basename($filepath);
+            rename($filepath, "readdata\\$filename");
+        }
+    }
+
     function update_sensors(){
         foreach (glob("jsondata/sensors/*.json") as $filepath) {
             $obj = json_decode(file_get_contents($filepath), true);
@@ -105,6 +142,17 @@ class db_functions{
         $statement->bindParam(':lon', $long);
         $statement->bindParam(':ts', $ts);
         $statement->bindParam(':P1', $P1);
+        $statement->execute();
+        $conn = null;
+    }
+
+    function insert_p2_Cluster($lat, $long, $ts, $P2){
+        $conn = $this->db_config->getConnection();
+        $statement = $conn->prepare('insert into clusters (lat, lon, ts, P2) values (:lat, :lon, :ts, :P2)');
+        $statement->bindParam(':lat', $lat);
+        $statement->bindParam(':lon', $long);
+        $statement->bindParam(':ts', $ts);
+        $statement->bindParam(':P2', $P2);
         $statement->execute();
         $conn = null;
     }

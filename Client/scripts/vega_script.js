@@ -5,8 +5,11 @@ function visualize_bar_chart(idList, p1List){
         let inner = {};
         inner['id'] = idList[i];
         inner['p1'] = p1List[i].toFixed(2);
+        inner.sort(function(a, b){return a - b});
         exampleFormat.push(inner);
     }
+
+
 
     let jsonData = JSON.stringify(exampleFormat);
     let yourVlSpec = {
@@ -37,14 +40,14 @@ function visualize_bar_chart(idList, p1List){
             {
                 "name": "xscale",
                 "type": "band",
-                "domain": {"data": "table", "field": "id"},
+                "domain": {"data": "table", "field": "id", "type": "text", "sort": "ascending"},
                 "range": "width",
                 "padding": 0.05,
                 "round": true
             },
             {
                 "name": "yscale",
-                "domain": {"data": "table", "field": "p1"},
+                "domain": {"data": "table", "field": "p1", "type": "text", "sort": "ascending"},
                 "nice": true,
                 "range": "height"
             }
@@ -61,9 +64,9 @@ function visualize_bar_chart(idList, p1List){
                 "from": {"data":"table"},
                 "encode": {
                     "enter": {
-                        "x": {"scale": "xscale", "field": "id"},
+                        "x": {"scale": "xscale", "field": "id", "type": "text", "sort": "ascending"},
                         "width": {"scale": "xscale", "band": 1},
-                        "y": {"scale": "yscale", "field": "p1"},
+                        "y": {"scale": "yscale", "field": "p1", "type": "text", "sort": "ascending"},
                         "y2": {"scale": "yscale", "value": 0}
                     },
                     "update": {
