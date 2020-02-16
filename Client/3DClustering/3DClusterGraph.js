@@ -117,5 +117,5 @@ function visualize3DGraphP2(latList, longList, p2List) {
         title: '3D Clustering',
         width: 477
     };
-    Plotly.newPlot('3DClustering', data1, layout);
+    Plotly.newPlot('3DClustering2', data1, layout);
 }
